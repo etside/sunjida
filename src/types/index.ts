@@ -1,9 +1,9 @@
 /**
- * Core TypeScript interfaces for Frame Portfolio
- * Based on SPECIFICATION.md data model requirements
+ * Core TypeScript interfaces for Sunjida Akter Portfolio
+ * Updated for graphic design portfolio
  */
 
-export type ProjectCategory = 'portraits' | 'landscapes' | 'editorial' | 'architecture' | 'documentary';
+export type ProjectCategory = 'logo-design' | 'brand-identity' | 'social-media' | 'presentation';
 
 export type AspectRatio = 'portrait' | 'landscape' | 'square';
 
@@ -18,42 +18,20 @@ export interface ProjectImage {
 export interface Project {
   id: string;
   title: string;
-  category: ProjectCategory;
+  category: ProjectCategory | string;
   year: string;
   coverImage: string;
   images: ProjectImage[];
   description: string;
   client?: string;
-  camera?: string;
   location?: string;
   slug: string;
-}
-
-export interface PhotographerInfo {
-  name: string;
-  tagline: string;
-  heroIntroduction: string;
-  biography: string;
-  approach: string;
-  awards: string[];
-  clients: string[];
-  education: string;
-  location: string;
-  email: string;
-  phone: string;
-  availability: string;
-  socialLinks: {
-    instagram?: string;
-    linkedin?: string;
-    behance?: string;
-  };
-  portraitImage: string;
 }
 
 export interface ContactSubmission {
   name: string;
   email: string;
-  projectType: 'editorial' | 'commercial' | 'personal';
+  projectType: 'logo-design' | 'brand-identity' | 'social-media' | 'other';
   message: string;
   timestamp: Date;
 }
