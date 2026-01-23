@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Package, ShoppingCart, Image, Mail, LogOut } from 'lucide-react';
+import { Package, ShoppingCart, Image, Mail, LogOut, FolderOpen } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { SEOHead } from '@/components/seo/SEOHead';
@@ -11,6 +11,7 @@ import { ProductsTable } from '@/components/admin/ProductsTable';
 import { OrdersTable } from '@/components/admin/OrdersTable';
 import { PortfolioTable } from '@/components/admin/PortfolioTable';
 import { MessagesTable } from '@/components/admin/MessagesTable';
+import { CategoriesTable } from '@/components/admin/CategoriesTable';
 
 export default function AdminDashboard() {
   const { user, signOut } = useAuth();
@@ -86,8 +87,9 @@ export default function AdminDashboard() {
           </motion.div>
 
           <Tabs defaultValue="products" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4 max-w-2xl">
+            <TabsList className="grid w-full grid-cols-5 max-w-3xl">
               <TabsTrigger value="products">Products</TabsTrigger>
+              <TabsTrigger value="categories">Categories</TabsTrigger>
               <TabsTrigger value="orders">Orders</TabsTrigger>
               <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
               <TabsTrigger value="messages">Messages</TabsTrigger>
@@ -103,6 +105,20 @@ export default function AdminDashboard() {
                 </CardHeader>
                 <CardContent>
                   <ProductsTable />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="categories">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FolderOpen className="w-5 h-5" />
+                    Product Categories
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CategoriesTable />
                 </CardContent>
               </Card>
             </TabsContent>
