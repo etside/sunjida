@@ -4,6 +4,8 @@
 
 import sunjidaPortrait1 from '@/assets/sunjida-portrait-1.jpg';
 import sunjidaPortrait2 from '@/assets/sunjida-portrait-2.jpg';
+import sunjidaPortrait3 from '@/assets/sunjida-portrait-3.jpg';
+import sunjidaPortrait4 from '@/assets/sunjida-portrait-4.jpg';
 
 export interface DesignerInfo {
   name: string;
@@ -25,9 +27,12 @@ export interface DesignerInfo {
     instagram?: string;
     linkedin?: string;
     behance?: string;
+    facebook?: string;
   };
   portraitImage: string;
   portraitImage2: string;
+  portraitImage3: string;
+  portraitImage4: string;
   stats: {
     happyClients: number;
     projectsCompleted: number;
@@ -37,14 +42,14 @@ export interface DesignerInfo {
 
 export const designerInfo: DesignerInfo = {
   name: 'Sunjida Akter',
-  tagline: 'Graphic Designer & Brand Specialist',
-  heroIntroduction: 'Transforming ideas into powerful visual identities that captivate and inspire.',
-  biography: `I'm Sunjida Akter, a passionate graphic designer and brand specialist from Bangladesh with a keen eye for creating impactful visual identities. I specialize in logo design, brand style guides, and complete visual identity packages that help businesses stand out in today's competitive market.
+  tagline: 'Graphic Designer & Sharee Entrepreneur',
+  heroIntroduction: 'Crafting stunning visual identities and curating the finest traditional Bangladeshi sarees.',
+  biography: `I'm Sunjida Akter, a passionate graphic designer and entrepreneur from Bangladesh. I specialize in creating impactful brand identities, logos, and visual designs that help businesses stand out. Beyond design, I run a curated Sharee collection, bringing the timeless elegance of traditional Bangladeshi sarees to modern fashion enthusiasts.
 
-My approach combines creativity with strategic thinking, ensuring every design not only looks beautiful but also communicates your brand's unique story effectively. With a 4.6-star rating on Fiverr and consistently positive client feedback, I'm committed to delivering exceptional quality that exceeds expectations.`,
-  approach: `Every brand has a story waiting to be told visually. My design process begins with understanding your vision, values, and target audience. I then craft designs that resonate with your customers and differentiate you from competitors.
+With a 4.6-star rating on Fiverr and a growing community of satisfied clients worldwide, I'm dedicated to delivering exceptional quality in everything I do. Whether it's designing your brand or helping you find the perfect saree, my goal is to exceed your expectations.`,
+  approach: `My design philosophy centers on understanding your unique story and translating it into visuals that resonate. I believe great design is both beautiful and functional—it should capture attention while communicating your message clearly.
 
-I believe in collaboration and communication throughout the design journey. Whether it's a logo, complete brand identity, or social media kit, I ensure every element aligns perfectly with your brand personality.`,
+For my Sharee business, I personally curate each piece, ensuring quality craftsmanship and authentic Bangladeshi heritage. Every saree tells a story of tradition meeting contemporary style.`,
   skills: [
     'Adobe Photoshop',
     'Adobe Illustrator',
@@ -52,8 +57,8 @@ I believe in collaboration and communication throughout the design journey. Whet
     'Brand Identity',
     'Visual Design',
     'Typography',
-    'Color Theory',
-    'Layout Design'
+    'Social Media Design',
+    'Fashion Curation'
   ],
   services: [
     'Logo Design',
@@ -61,23 +66,24 @@ I believe in collaboration and communication throughout the design journey. Whet
     'Visual Identity',
     'Social Media Kits',
     'Presentation Design',
-    'E-books & Cards'
+    'Sharee Collection'
   ],
   location: 'Bangladesh',
-  email: 'sunjidagraphic@gmail.com',
+  email: 'sunjida8986@gmail.com',
   responseTime: '1 hour',
-  availability: 'Looking forward to work with you!!',
+  availability: 'Available for new projects!',
   rating: 4.6,
   reviewCount: 50,
   level: 'Level 1 Seller',
   socialLinks: {
     fiverr: 'https://www.fiverr.com/sunjidagraphic',
     instagram: 'https://instagram.com/sunjidagraphic',
-    linkedin: 'https://linkedin.com/in/sunjidaakter',
-    behance: 'https://behance.net/sunjidaakter'
+    facebook: 'https://facebook.com/sunjidaakter',
   },
-  portraitImage: sunjidaPortrait1,
-  portraitImage2: sunjidaPortrait2,
+  portraitImage: sunjidaPortrait3,
+  portraitImage2: sunjidaPortrait4,
+  portraitImage3: sunjidaPortrait1,
+  portraitImage4: sunjidaPortrait2,
   stats: {
     happyClients: 50,
     projectsCompleted: 75,
@@ -189,9 +195,9 @@ export const services: Service[] = [
   },
   {
     id: '6',
-    title: 'E-books & Cards',
-    description: 'Beautiful digital publications and printed materials that engage readers.',
-    icon: 'FileText',
-    features: ['E-book design', 'Business cards', 'Brochures', 'Flyers']
+    title: 'Sharee Collection',
+    description: 'Curated traditional Bangladeshi sarees for the modern fashion enthusiast.',
+    icon: 'Sparkles',
+    features: ['Handpicked pieces', 'Quality assured', 'Authentic craftsmanship', 'Doorstep delivery']
   }
 ];

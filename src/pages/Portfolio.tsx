@@ -3,10 +3,11 @@ import { projects, portfolioCategories } from '@/data/projects';
 import { PortfolioGrid } from '@/components/portfolio/PortfolioGrid';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { motion } from 'framer-motion';
+import { Filter } from 'lucide-react';
 
 /**
  * Portfolio page with category filtering
- * Displays Sunjida's design projects
+ * Elegant grid layout with responsive design
  */
 export default function Portfolio() {
   const [activeCategory, setActiveCategory] = useState('all');
@@ -24,17 +25,20 @@ export default function Portfolio() {
       
       <div className="min-h-screen">
         {/* Hero Section */}
-        <section className="relative py-24 md:py-32 px-6 lg:px-8 border-b border-border">
+        <section className="pt-24 md:pt-32 pb-12 md:pb-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-secondary/50 to-background">
           <div className="max-w-7xl mx-auto text-center space-y-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
+              transition={{ duration: 0.6 }}
             >
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-light tracking-wide mb-4">
-                Portfolio
+              <span className="text-sm font-medium text-primary uppercase tracking-wider">
+                My Work
+              </span>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-tight mt-4">
+                <span className="text-gradient font-medium">Portfolio</span>
               </h1>
-              <p className="text-lg md:text-xl text-muted-foreground font-light tracking-wide max-w-2xl mx-auto">
+              <p className="text-lg md:text-xl text-muted-foreground font-light mt-4 max-w-2xl mx-auto">
                 A curated collection of brand identity and visual design projects
               </p>
             </motion.div>
@@ -42,14 +46,15 @@ export default function Portfolio() {
         </section>
 
         {/* Category Filters */}
-        <section className="py-8 px-6 lg:px-8 border-b border-border sticky top-16 bg-background/95 backdrop-blur-sm z-10">
+        <section className="py-4 sm:py-6 px-4 sm:px-6 lg:px-8 border-b border-border sticky top-16 md:top-20 bg-background/95 backdrop-blur-sm z-10">
           <div className="max-w-7xl mx-auto">
-            <div className="flex flex-wrap justify-center gap-2 md:gap-4">
+            <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-2">
+              <Filter className="w-4 h-4 text-muted-foreground mr-1 flex-shrink-0" />
               {portfolioCategories.map((category) => (
                 <button
                   key={category.id}
                   onClick={() => setActiveCategory(category.id)}
-                  className={`px-4 py-2 rounded-full text-sm font-light tracking-wide transition-all ${
+                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
                     activeCategory === category.id
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
@@ -63,14 +68,14 @@ export default function Portfolio() {
         </section>
 
         {/* Portfolio Grid */}
-        <section className="py-12 md:py-16 px-4 md:px-6 lg:px-8">
+        <section className="py-12 md:py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <PortfolioGrid projects={filteredProjects} />
           </div>
         </section>
 
         {/* Bottom spacing */}
-        <div className="h-24" />
+        <div className="h-16 md:h-24" />
       </div>
     </>
   );
