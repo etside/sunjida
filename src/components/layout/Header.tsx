@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Menu } from 'lucide-react';
+import { Menu, ShoppingBag, User } from 'lucide-react';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useScrollPosition } from '@/hooks/useScrollPosition';
@@ -18,17 +18,16 @@ const navLinks = [
 ];
 
 /**
- * Main header component with scroll-aware styling
- * Transparent on hero section, solid when scrolled
- * Mobile responsive with hamburger menu
+ * Responsive header with elegant styling
+ * Glass effect on scroll, mobile hamburger menu
  */
 export function Header() {
   const location = useLocation();
   const { isScrolled } = useScrollPosition();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
-  // Header is transparent only on homepage hero when not scrolled
-  const isTransparent = location.pathname === '/' && !isScrolled;
+  const isHomepage = location.pathname === '/';
+  const showSolidBg = isScrolled || !isHomepage;
 
   return (
     <motion.header
@@ -36,101 +35,125 @@ export function Header() {
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
-        isTransparent
-          ? 'bg-transparent'
-          : 'bg-background/90 backdrop-blur-lg border-b border-border shadow-sm'
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
+        showSolidBg
+          ? 'glass border-b border-border shadow-sm'
+          : 'bg-transparent'
       )}
     >
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <Link
             to="/"
-            className={cn(
-              'text-lg font-light tracking-widest transition-all duration-300',
-              isTransparent
-                ? 'text-foreground hover:text-foreground/80'
-                : 'text-foreground hover:text-foreground/80'
-            )}
+            className="text-lg sm:text-xl font-medium tracking-wide text-foreground hover:text-primary transition-colors"
           >
             <motion.span
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-gradient"
             >
-              {designerInfo.name.toUpperCase()}
+              {designerInfo.name.split(' ')[0]}
             </motion.span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-1">
             {navLinks.map((link, index) => (
-                <motion.div
-                  key={link.path}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.1 * index }}
+              <motion.div
+                key={link.path}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.1 * index }}
+              >
+                <Link
+                  to={link.path}
+                  className={cn(
+                    "relative px-4 py-2 text-sm font-medium rounded-lg transition-colors",
+                    location.pathname === link.path
+                      ? 'text-primary bg-primary/10'
+                      : 'text-foreground/70 hover:text-foreground hover:bg-accent'
+                  )}
                 >
-                  <Link
-                    to={link.path}
-                    className={cn(
-                      "relative text-sm leading-7 font-light tracking-wide transition-colors duration-300",
-                      isTransparent
-                        ? 'text-foreground hover:text-foreground/80'
-                        : 'text-foreground hover:text-foreground/80'
-                    )}
-                  >
-                    {link.name}
-                    {/* Active underline */}
-                    {location.pathname === link.path && (
-                      <motion.div
-                        layoutId="activeNav"
-                        className="absolute -bottom-1 left-0 right-0 h-px bg-foreground"
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      />
-                    )}
-                  </Link>
-                </motion.div>
-              ))}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4, delay: 0.4 }}
-            >
-              <ThemeToggle />
-            </motion.div>
+                  {link.name}
+                </Link>
+              </motion.div>
+            ))}
           </nav>
 
-          {/* Mobile Menu */}
-          <div className="md:hidden flex items-center gap-2">
+          {/* Right Actions */}
+          <div className="flex items-center gap-2">
             <ThemeToggle />
-            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-              <SheetTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-9"
-                  aria-label="Open menu"
-                >
-                  <Menu className="size-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-full sm:w-80">
-                <nav className="flex flex-col gap-6 mt-8">
-                  {navLinks.map((link) => (
-                    <Link
-                      key={link.path}
-                      to={link.path}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="text-lg leading-7 font-light tracking-wide text-foreground hover:text-foreground/80"
-                    >
-                      {link.name}
-                    </Link>
-                  ))}
-                </nav>
-              </SheetContent>
-            </Sheet>
+            
+            {/* Admin Link (Desktop) */}
+            <Link
+              to="/auth"
+              className="hidden md:flex items-center justify-center w-10 h-10 rounded-lg hover:bg-accent transition-colors"
+              title="Admin"
+            >
+              <User className="w-5 h-5 text-muted-foreground" />
+            </Link>
+
+            {/* Mobile Menu */}
+            <div className="md:hidden">
+              <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-10"
+                    aria-label="Open menu"
+                  >
+                    <Menu className="size-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-full sm:w-80 p-0">
+                  <div className="flex flex-col h-full">
+                    {/* Mobile Header */}
+                    <div className="p-6 border-b border-border">
+                      <span className="text-xl font-medium text-gradient">
+                        {designerInfo.name}
+                      </span>
+                    </div>
+                    
+                    {/* Mobile Nav Links */}
+                    <nav className="flex-1 p-6 space-y-2">
+                      {navLinks.map((link) => (
+                        <Link
+                          key={link.path}
+                          to={link.path}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={cn(
+                            "flex items-center px-4 py-3 rounded-xl text-lg font-medium transition-colors",
+                            location.pathname === link.path
+                              ? 'text-primary bg-primary/10'
+                              : 'text-foreground hover:bg-accent'
+                          )}
+                        >
+                          {link.name}
+                        </Link>
+                      ))}
+                    </nav>
+                    
+                    {/* Mobile Footer */}
+                    <div className="p-6 border-t border-border space-y-4">
+                      <Link
+                        to="/auth"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-3 rounded-xl bg-accent text-foreground font-medium"
+                      >
+                        <User className="w-5 h-5" />
+                        Admin Login
+                      </Link>
+                      <p className="text-sm text-muted-foreground text-center">
+                        {designerInfo.email}
+                      </p>
+                    </div>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
           </div>
         </div>
       </div>

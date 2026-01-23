@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ShoppingBag, Filter } from 'lucide-react';
+import { ShoppingBag, Filter, Sparkles } from 'lucide-react';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { supabase } from '@/integrations/supabase/client';
 import { ProductCard } from '@/components/shop/ProductCard';
 import { CartDrawer } from '@/components/shop/CartDrawer';
 import { useCart } from '@/hooks/useCart';
 import { Button } from '@/components/ui/button';
+import { designerInfo } from '@/data/designer';
+import { Link } from 'react-router-dom';
 
 interface Product {
   id: string;
@@ -40,7 +42,7 @@ export default function Shop() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [loading, setLoading] = useState(true);
-  const { cartItems, addToCart, cartOpen, setCartOpen } = useCart();
+  const { cartItems, addToCart, updateQuantity, removeFromCart, cartOpen, setCartOpen } = useCart();
 
   useEffect(() => {
     fetchProducts();
@@ -89,31 +91,58 @@ export default function Shop() {
 
       <div className="min-h-screen">
         {/* Hero Section */}
-        <section className="py-24 md:py-32 px-6 lg:px-8 border-b border-border bg-gradient-to-br from-background via-background to-secondary/20">
-          <div className="max-w-7xl mx-auto text-center space-y-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-light tracking-wide mb-4">
-                Sharee Collection
-              </h1>
-              <p className="text-lg md:text-xl text-muted-foreground font-light tracking-wide max-w-2xl mx-auto">
-                Discover the timeless elegance of traditional Bangladeshi sarees
-              </p>
-            </motion.div>
+        <section className="pt-24 md:pt-32 pb-12 md:pb-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-secondary via-accent/30 to-secondary">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6 }}
+                className="text-center md:text-left"
+              >
+                <span className="text-sm font-medium text-primary uppercase tracking-wider">
+                  Exclusive Collection
+                </span>
+                <h1 className="text-4xl sm:text-5xl md:text-6xl font-light tracking-tight mt-4">
+                  <span className="text-gradient font-medium">Sharee</span> Collection
+                </h1>
+                <p className="text-lg text-muted-foreground font-light mt-4 max-w-lg">
+                  Discover the timeless elegance of traditional Bangladeshi sarees. Each piece is handpicked for quality and authentic craftsmanship.
+                </p>
+                <div className="flex flex-wrap gap-2 mt-6 justify-center md:justify-start">
+                  {['Jamdani', 'Silk', 'Cotton', 'Katan', 'Muslin'].map((type) => (
+                    <span key={type} className="px-4 py-2 rounded-full bg-card/80 text-sm font-medium border border-border">
+                      {type}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="hidden md:block"
+              >
+                <div className="aspect-square max-w-sm mx-auto rounded-2xl overflow-hidden shadow-2xl">
+                  <img
+                    src={designerInfo.portraitImage2}
+                    alt="Traditional Saree"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </motion.div>
+            </div>
           </div>
         </section>
 
-        {/* Category Filters */}
-        <section className="py-6 px-6 lg:px-8 border-b border-border sticky top-16 bg-background/95 backdrop-blur-sm z-10">
-          <div className="max-w-7xl mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar">
-              <Filter className="w-4 h-4 text-muted-foreground mr-2" />
+        {/* Category Filters & Cart */}
+        <section className="py-4 sm:py-6 px-4 sm:px-6 lg:px-8 border-b border-border sticky top-16 md:top-20 bg-background/95 backdrop-blur-sm z-10">
+          <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar flex-1">
+              <Filter className="w-4 h-4 text-muted-foreground flex-shrink-0" />
               <button
                 onClick={() => setSelectedCategory('all')}
-                className={`px-4 py-2 rounded-full text-sm font-light whitespace-nowrap transition-all ${
+                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
                   selectedCategory === 'all'
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
@@ -125,7 +154,7 @@ export default function Shop() {
                 <button
                   key={category.id}
                   onClick={() => setSelectedCategory(category.slug)}
-                  className={`px-4 py-2 rounded-full text-sm font-light whitespace-nowrap transition-all ${
+                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
                     selectedCategory === category.slug
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
@@ -140,7 +169,7 @@ export default function Shop() {
             <Button
               variant="outline"
               size="icon"
-              className="relative"
+              className="relative flex-shrink-0 rounded-full"
               onClick={() => setCartOpen(true)}
             >
               <ShoppingBag className="w-5 h-5" />
@@ -154,23 +183,33 @@ export default function Shop() {
         </section>
 
         {/* Products Grid */}
-        <section className="py-12 md:py-16 px-6 lg:px-8">
+        <section className="py-12 md:py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                 {[...Array(8)].map((_, i) => (
-                  <div key={i} className="aspect-[3/4] bg-muted animate-pulse rounded-lg" />
+                  <div key={i} className="aspect-[3/4] bg-muted animate-pulse rounded-2xl" />
                 ))}
               </div>
             ) : filteredProducts.length === 0 ? (
-              <div className="text-center py-16">
-                <ShoppingBag className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-xl font-light mb-2">No products found</h3>
-                <p className="text-muted-foreground">Check back soon for new arrivals!</p>
+              <div className="text-center py-16 space-y-4">
+                <div className="w-20 h-20 mx-auto rounded-full bg-secondary flex items-center justify-center">
+                  <Sparkles className="w-10 h-10 text-muted-foreground" />
+                </div>
+                <h3 className="text-2xl font-light">Coming Soon!</h3>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  Our beautiful Sharee collection is being curated. Check back soon for new arrivals!
+                </p>
+                <Link
+                  to="/contact"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors font-medium mt-4"
+                >
+                  Contact for Custom Orders
+                </Link>
               </div>
             ) : (
               <motion.div
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
@@ -195,7 +234,12 @@ export default function Shop() {
           open={cartOpen}
           onOpenChange={setCartOpen}
           items={cartItems}
+          onUpdateQuantity={updateQuantity}
+          onRemove={removeFromCart}
         />
+
+        {/* Bottom spacing */}
+        <div className="h-16 md:h-24" />
       </div>
     </>
   );
