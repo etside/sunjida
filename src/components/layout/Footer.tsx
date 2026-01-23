@@ -1,6 +1,5 @@
 import { Instagram, Linkedin } from 'lucide-react';
-import { photographerInfo } from '@/data/photographer';
-import { Separator } from '@/components/ui/separator';
+import { designerInfo } from '@/data/designer';
 
 /**
  * Minimal footer component with social links and copyright
@@ -14,14 +13,27 @@ export function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           {/* Copyright */}
           <p className="text-sm text-muted-foreground font-light tracking-wide">
-            © {currentYear} {photographerInfo.name}. All rights reserved.
+            © {currentYear} {designerInfo.name}. All rights reserved.
           </p>
 
           {/* Social Links */}
           <div className="flex items-center gap-6">
-            {photographerInfo.socialLinks.instagram && (
+            {designerInfo.socialLinks.fiverr && (
               <a
-                href={photographerInfo.socialLinks.instagram}
+                href={designerInfo.socialLinks.fiverr}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Fiverr"
+              >
+                <svg className="size-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M23.004 15.588a.995.995 0 1 0 .002-1.99.995.995 0 0 0-.002 1.99zm-.996-3.705h-.85c-.546 0-.84.41-.84 1.092v2.466h-1.61v-3.558h-.684c-.547 0-.84.41-.84 1.092v2.466h-1.61v-4.874h1.61v.74c.264-.574.626-.74 1.163-.74h1.972v.74c.264-.574.625-.74 1.162-.74h.527v1.316z"/>
+                </svg>
+              </a>
+            )}
+            {designerInfo.socialLinks.instagram && (
+              <a
+                href={designerInfo.socialLinks.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground transition-colors"
@@ -30,9 +42,9 @@ export function Footer() {
                 <Instagram className="size-5" />
               </a>
             )}
-            {photographerInfo.socialLinks.linkedin && (
+            {designerInfo.socialLinks.linkedin && (
               <a
-                href={photographerInfo.socialLinks.linkedin}
+                href={designerInfo.socialLinks.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground transition-colors"
@@ -41,9 +53,9 @@ export function Footer() {
                 <Linkedin className="size-5" />
               </a>
             )}
-            {photographerInfo.socialLinks.behance && (
+            {designerInfo.socialLinks.behance && (
               <a
-                href={photographerInfo.socialLinks.behance}
+                href={designerInfo.socialLinks.behance}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground transition-colors"
