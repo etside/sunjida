@@ -3,6 +3,7 @@ import { Menu, ShoppingBag, User } from 'lucide-react';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useScrollPosition } from '@/hooks/useScrollPosition';
+import { useAuth } from '@/hooks/useAuth';
 import { ThemeToggle } from './ThemeToggle';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -17,13 +18,10 @@ const navLinks = [
   { name: 'Contact', path: '/contact' },
 ];
 
-/**
- * Responsive header with elegant styling
- * Glass effect on scroll, mobile hamburger menu
- */
 export function Header() {
   const location = useLocation();
   const { isScrolled } = useScrollPosition();
+  const { user, isAdmin } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   const isHomepage = location.pathname === '/';
@@ -86,13 +84,16 @@ export function Header() {
           <div className="flex items-center gap-2">
             <ThemeToggle />
             
-            {/* Admin Link (Desktop) */}
+            {/* User/Account Link */}
             <Link
-              to="/auth"
+              to={user ? (isAdmin ? '/admin' : '/account') : '/auth'}
               className="hidden md:flex items-center justify-center w-10 h-10 rounded-lg hover:bg-accent transition-colors"
-              title="Admin"
+              title={user ? (isAdmin ? 'Admin Panel' : 'My Account') : 'Login'}
             >
-              <User className="w-5 h-5 text-muted-foreground" />
+              <User className={cn(
+                "w-5 h-5",
+                user ? "text-primary" : "text-muted-foreground"
+              )} />
             </Link>
 
             {/* Mobile Menu */}
@@ -138,14 +139,37 @@ export function Header() {
                     
                     {/* Mobile Footer */}
                     <div className="p-6 border-t border-border space-y-4">
-                      <Link
-                        to="/auth"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-3 rounded-xl bg-accent text-foreground font-medium"
-                      >
-                        <User className="w-5 h-5" />
-                        Admin Login
-                      </Link>
+                      {user ? (
+                        <>
+                          <Link
+                            to="/account"
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="flex items-center gap-3 px-4 py-3 rounded-xl bg-accent text-foreground font-medium"
+                          >
+                            <User className="w-5 h-5" />
+                            My Account
+                          </Link>
+                          {isAdmin && (
+                            <Link
+                              to="/admin"
+                              onClick={() => setMobileMenuOpen(false)}
+                              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 text-primary font-medium"
+                            >
+                              <ShoppingBag className="w-5 h-5" />
+                              Admin Panel
+                            </Link>
+                          )}
+                        </>
+                      ) : (
+                        <Link
+                          to="/auth"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="flex items-center gap-3 px-4 py-3 rounded-xl bg-accent text-foreground font-medium"
+                        >
+                          <User className="w-5 h-5" />
+                          Login / Sign Up
+                        </Link>
+                      )}
                       <p className="text-sm text-muted-foreground text-center">
                         {designerInfo.email}
                       </p>

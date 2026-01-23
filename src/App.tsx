@@ -20,7 +20,9 @@ const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Shop = lazy(() => import("./pages/Shop"));
+const ProductDetailPage = lazy(() => import("./pages/ProductDetail"));
 const Auth = lazy(() => import("./pages/Auth"));
+const Account = lazy(() => import("./pages/Account"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
 const Checkout = lazy(() => import("./pages/Checkout"));
 const OrderSuccess = lazy(() => import("./pages/OrderSuccess"));
@@ -40,7 +42,9 @@ function AnimatedRoutes() {
         <Route path="/about" element={<PageTransition><About /></PageTransition>} />
         <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
         <Route path="/shop" element={<PageTransition><Shop /></PageTransition>} />
+        <Route path="/product/:slug" element={<PageTransition><ProductDetailPage /></PageTransition>} />
         <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
+        <Route path="/account" element={<PageTransition><Account /></PageTransition>} />
         <Route path="/checkout" element={<PageTransition><Checkout /></PageTransition>} />
         <Route path="/order-success" element={<PageTransition><OrderSuccess /></PageTransition>} />
         <Route path="/admin" element={<AdminLayout />}>
