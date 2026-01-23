@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Package, ShoppingCart, Image, Mail, Users, TrendingUp, LogOut } from 'lucide-react';
+import { Package, ShoppingCart, Image, Mail, LogOut } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ProductsTable } from '@/components/admin/ProductsTable';
+import { OrdersTable } from '@/components/admin/OrdersTable';
+import { PortfolioTable } from '@/components/admin/PortfolioTable';
+import { MessagesTable } from '@/components/admin/MessagesTable';
 
 export default function AdminDashboard() {
   const { user, signOut } = useAuth();
@@ -49,12 +53,11 @@ export default function AdminDashboard() {
       <SEOHead title="Admin Dashboard" description="Manage your portfolio and Sharee shop" />
 
       <div className="min-h-screen bg-secondary/20">
-        {/* Header */}
         <header className="bg-background border-b border-border sticky top-0 z-40">
           <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
             <h1 className="text-2xl font-light tracking-wide">Admin Dashboard</h1>
             <div className="flex items-center gap-4">
-              <span className="text-sm text-muted-foreground">{user?.email}</span>
+              <span className="text-sm text-muted-foreground hidden sm:block">{user?.email}</span>
               <Button variant="ghost" size="sm" onClick={signOut}>
                 <LogOut className="w-4 h-4 mr-2" />
                 Sign Out
@@ -64,19 +67,15 @@ export default function AdminDashboard() {
         </header>
 
         <main className="max-w-7xl mx-auto px-6 py-8">
-          {/* Stats Grid */}
           <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+            className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
           >
-            {statCards.map((stat, index) => (
+            {statCards.map((stat) => (
               <Card key={stat.title}>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    {stat.title}
-                  </CardTitle>
+                  <CardTitle className="text-sm font-medium text-muted-foreground">{stat.title}</CardTitle>
                   <stat.icon className={`w-5 h-5 ${stat.color}`} />
                 </CardHeader>
                 <CardContent>
@@ -86,7 +85,6 @@ export default function AdminDashboard() {
             ))}
           </motion.div>
 
-          {/* Management Tabs */}
           <Tabs defaultValue="products" className="space-y-6">
             <TabsList className="grid w-full grid-cols-4 max-w-2xl">
               <TabsTrigger value="products">Products</TabsTrigger>
@@ -100,14 +98,11 @@ export default function AdminDashboard() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Package className="w-5 h-5" />
-                    Sharee Products Management
+                    Sharee Products
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground mb-4">
-                    Manage your Sharee collection - add, edit, or remove products.
-                  </p>
-                  <Button>Add New Product</Button>
+                  <ProductsTable />
                 </CardContent>
               </Card>
             </TabsContent>
@@ -117,14 +112,11 @@ export default function AdminDashboard() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <ShoppingCart className="w-5 h-5" />
-                    Order Management
+                    Orders
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground mb-4">
-                    View and manage customer orders, update status, and track shipments.
-                  </p>
-                  <Button>View All Orders</Button>
+                  <OrdersTable />
                 </CardContent>
               </Card>
             </TabsContent>
@@ -134,14 +126,11 @@ export default function AdminDashboard() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Image className="w-5 h-5" />
-                    Portfolio Management
+                    Portfolio Projects
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground mb-4">
-                    Manage your design portfolio - add new projects, update descriptions, and organize categories.
-                  </p>
-                  <Button>Add New Project</Button>
+                  <PortfolioTable />
                 </CardContent>
               </Card>
             </TabsContent>
@@ -155,10 +144,7 @@ export default function AdminDashboard() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground mb-4">
-                    View messages from potential clients and customers.
-                  </p>
-                  <Button>View Messages</Button>
+                  <MessagesTable />
                 </CardContent>
               </Card>
             </TabsContent>

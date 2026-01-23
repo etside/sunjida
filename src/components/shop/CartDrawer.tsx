@@ -105,7 +105,11 @@ export function CartDrawer({ open, onOpenChange, items, onUpdateQuantity, onRemo
                 <span>৳{totalAmount.toLocaleString()}</span>
               </div>
               <Button className="w-full" size="lg" asChild>
-                <Link to="/checkout" onClick={() => onOpenChange(false)}>
+                <Link 
+                  to="/checkout" 
+                  state={{ cartItems: items, totalAmount }}
+                  onClick={() => onOpenChange(false)}
+                >
                   Proceed to Checkout
                 </Link>
               </Button>
