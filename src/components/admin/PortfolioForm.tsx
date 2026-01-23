@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { ImageUpload } from './ImageUpload';
 
 const projectSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200),
@@ -30,7 +31,6 @@ const projectSchema = z.object({
   category: z.string().min(1, 'Category is required'),
   year: z.string().min(4, 'Year is required'),
   description: z.string().max(2000).optional(),
-  cover_image_url: z.string().url('Must be a valid URL'),
   client: z.string().max(200).optional(),
   location: z.string().max(200).optional(),
   is_featured: z.boolean().default(false),
@@ -59,6 +59,8 @@ interface PortfolioFormProps {
 
 export function PortfolioForm({ open, onClose, project, onSuccess }: PortfolioFormProps) {
   const [loading, setLoading] = useState(false);
+  const [coverImage, setCoverImage] = useState<string[]>([]);
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
 
   const {
     register,
@@ -83,20 +85,36 @@ export function PortfolioForm({ open, onClose, project, onSuccess }: PortfolioFo
         category: project.category,
         year: project.year,
         description: project.description || '',
-        cover_image_url: project.cover_image_url,
         client: project.client || '',
         location: project.location || '',
         is_featured: project.is_featured || false,
         display_order: project.display_order || 0,
       });
+      setCoverImage(project.cover_image_url ? [project.cover_image_url] : []);
+      // Load gallery images if exists
+      loadGalleryImages(project.id);
     } else {
       reset({
         is_featured: false,
         display_order: 0,
         year: new Date().getFullYear().toString(),
       });
+      setCoverImage([]);
+      setGalleryImages([]);
     }
   }, [project, reset]);
+
+  const loadGalleryImages = async (projectId: string) => {
+    const { data } = await supabase
+      .from('portfolio_images')
+      .select('image_url')
+      .eq('project_id', projectId)
+      .order('display_order');
+    
+    if (data) {
+      setGalleryImages(data.map(img => img.image_url));
+    }
+  };
 
   const generateSlug = (title: string) => {
     return title
@@ -114,25 +132,66 @@ export function PortfolioForm({ open, onClose, project, onSuccess }: PortfolioFo
   };
 
   const onSubmit = async (data: ProjectFormData) => {
+    if (coverImage.length === 0) {
+      toast.error('Please upload a cover image');
+      return;
+    }
+
     setLoading(true);
     try {
+      const payload = {
+        ...data,
+        cover_image_url: coverImage[0],
+      };
+
       if (project) {
         const { error } = await supabase
           .from('portfolio_projects')
           .update({
-            ...data,
+            ...payload,
             updated_at: new Date().toISOString(),
           })
           .eq('id', project.id);
 
         if (error) throw error;
+
+        // Update gallery images
+        await supabase
+          .from('portfolio_images')
+          .delete()
+          .eq('project_id', project.id);
+
+        if (galleryImages.length > 0) {
+          await supabase.from('portfolio_images').insert(
+            galleryImages.map((url, index) => ({
+              project_id: project.id,
+              image_url: url,
+              display_order: index,
+            }))
+          );
+        }
+
         toast.success('Project updated successfully');
       } else {
-        const { error } = await supabase
+        const { data: newProject, error } = await supabase
           .from('portfolio_projects')
-          .insert([data as any]);
+          .insert([payload as any])
+          .select()
+          .single();
 
         if (error) throw error;
+
+        // Insert gallery images
+        if (galleryImages.length > 0 && newProject) {
+          await supabase.from('portfolio_images').insert(
+            galleryImages.map((url, index) => ({
+              project_id: newProject.id,
+              image_url: url,
+              display_order: index,
+            }))
+          );
+        }
+
         toast.success('Project created successfully');
       }
 
@@ -147,7 +206,7 @@ export function PortfolioForm({ open, onClose, project, onSuccess }: PortfolioFo
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-light">
             {project ? 'Edit Project' : 'Add New Project'}
@@ -219,22 +278,23 @@ export function PortfolioForm({ open, onClose, project, onSuccess }: PortfolioFo
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="cover_image_url">Cover Image URL *</Label>
-            <Input
-              id="cover_image_url"
-              {...register('cover_image_url')}
-              placeholder="https://example.com/image.jpg"
+            <Label>Cover Image *</Label>
+            <ImageUpload
+              bucket="portfolio-images"
+              images={coverImage}
+              onImagesChange={setCoverImage}
+              maxImages={1}
             />
-            {errors.cover_image_url && (
-              <p className="text-sm text-destructive">{errors.cover_image_url.message}</p>
-            )}
-            {watch('cover_image_url') && (
-              <img
-                src={watch('cover_image_url')}
-                alt="Preview"
-                className="w-full h-40 object-cover rounded-lg mt-2"
-              />
-            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label>Gallery Images</Label>
+            <ImageUpload
+              bucket="portfolio-images"
+              images={galleryImages}
+              onImagesChange={setGalleryImages}
+              maxImages={10}
+            />
           </div>
 
           <div className="space-y-2">

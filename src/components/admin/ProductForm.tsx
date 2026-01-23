@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Loader2, X, Plus } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { ImageUpload } from './ImageUpload';
 
 const productSchema = z.object({
   name: z.string().min(1, 'Name is required').max(200),
@@ -60,7 +61,6 @@ export function ProductForm({ open, onClose, product, onSuccess }: ProductFormPr
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
-  const [newImageUrl, setNewImageUrl] = useState('');
 
   const {
     register,
@@ -101,7 +101,6 @@ export function ProductForm({ open, onClose, product, onSuccess }: ProductFormPr
         is_featured: product.is_featured || false,
         is_active: product.is_active ?? true,
       });
-      // Load existing images
       if (product.images?.length > 0) {
         setImageUrls(product.images.map((img: any) => img.image_url));
       }
@@ -140,22 +139,10 @@ export function ProductForm({ open, onClose, product, onSuccess }: ProductFormPr
     }
   };
 
-  const addImageUrl = () => {
-    if (newImageUrl.trim() && !imageUrls.includes(newImageUrl.trim())) {
-      setImageUrls([...imageUrls, newImageUrl.trim()]);
-      setNewImageUrl('');
-    }
-  };
-
-  const removeImageUrl = (index: number) => {
-    setImageUrls(imageUrls.filter((_, i) => i !== index));
-  };
-
   const onSubmit = async (data: ProductFormData) => {
     setLoading(true);
     try {
       if (product) {
-        // Update existing product
         const { error } = await supabase
           .from('sharee_products')
           .update({
@@ -166,7 +153,6 @@ export function ProductForm({ open, onClose, product, onSuccess }: ProductFormPr
 
         if (error) throw error;
 
-        // Update images - delete old and insert new
         await supabase
           .from('sharee_product_images')
           .delete()
@@ -185,7 +171,6 @@ export function ProductForm({ open, onClose, product, onSuccess }: ProductFormPr
 
         toast.success('Product updated successfully');
       } else {
-        // Create new product
         const { data: newProduct, error } = await supabase
           .from('sharee_products')
           .insert([data as any])
@@ -194,7 +179,6 @@ export function ProductForm({ open, onClose, product, onSuccess }: ProductFormPr
 
         if (error) throw error;
 
-        // Insert images
         if (imageUrls.length > 0 && newProduct) {
           await supabase.from('sharee_product_images').insert(
             imageUrls.map((url, index) => ({
@@ -364,44 +348,14 @@ export function ProductForm({ open, onClose, product, onSuccess }: ProductFormPr
             />
           </div>
 
-          <div className="space-y-3">
-            <Label>Product Images (URLs)</Label>
-            <div className="flex gap-2">
-              <Input
-                value={newImageUrl}
-                onChange={(e) => setNewImageUrl(e.target.value)}
-                placeholder="https://example.com/image.jpg"
-                onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addImageUrl())}
-              />
-              <Button type="button" variant="outline" onClick={addImageUrl}>
-                <Plus className="w-4 h-4" />
-              </Button>
-            </div>
-            {imageUrls.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                {imageUrls.map((url, index) => (
-                  <div key={index} className="relative group">
-                    <img
-                      src={url}
-                      alt={`Product ${index + 1}`}
-                      className="w-full h-24 object-cover rounded-lg border"
-                    />
-                    {index === 0 && (
-                      <span className="absolute top-1 left-1 text-xs bg-primary text-primary-foreground px-1 rounded">
-                        Primary
-                      </span>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => removeImageUrl(index)}
-                      className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
+          <div className="space-y-2">
+            <Label>Product Images</Label>
+            <ImageUpload
+              bucket="product-images"
+              images={imageUrls}
+              onImagesChange={setImageUrls}
+              maxImages={6}
+            />
           </div>
 
           <div className="flex items-center gap-6">
