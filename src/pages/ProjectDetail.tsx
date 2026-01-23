@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, MapPin, Camera, User } from 'lucide-react';
+import { Calendar, MapPin, User } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
@@ -45,89 +45,80 @@ export default function ProjectDetail() {
       
       <div className="min-h-screen">
         {/* Hero Image - 70vh */}
-      <motion.div
-        className="relative w-full h-[70vh] overflow-hidden bg-muted"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-      >
-        <img
-          src={project.coverImage}
-          alt={project.title}
-          className="w-full h-full object-cover"
-          loading="eager"
-          fetchPriority="high"
-        />
-        {/* Gradient overlay for depth */}
-        <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
-      </motion.div>
-
-      {/* Project Info Section */}
-      <section className="max-w-4xl mx-auto px-6 lg:px-8 py-12 md:py-16">
         <motion.div
-          className="space-y-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+          className="relative w-full h-[70vh] overflow-hidden bg-muted"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
         >
-          {/* Title and Category */}
-          <div className="space-y-4">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-light tracking-wide">
-              {project.title}
-            </h1>
-            <div className="flex flex-wrap gap-6 text-sm text-muted-foreground font-light">
-              <div className="flex items-center gap-2">
-                <Calendar className="size-4" />
-                <span>{project.year}</span>
-              </div>
-              <div className="flex items-center gap-2 capitalize">
-                <span>•</span>
-                <span>{project.category}</span>
-              </div>
-              {project.location && (
-                <>
+          <img
+            src={project.coverImage}
+            alt={project.title}
+            className="w-full h-full object-cover"
+            loading="eager"
+            fetchPriority="high"
+          />
+          {/* Gradient overlay for depth */}
+          <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
+        </motion.div>
+
+        {/* Project Info Section */}
+        <section className="max-w-4xl mx-auto px-6 lg:px-8 py-12 md:py-16">
+          <motion.div
+            className="space-y-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            {/* Title and Category */}
+            <div className="space-y-4">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-light tracking-wide">
+                {project.title}
+              </h1>
+              <div className="flex flex-wrap gap-6 text-sm text-muted-foreground font-light">
+                <div className="flex items-center gap-2">
+                  <Calendar className="size-4" />
+                  <span>{project.year}</span>
+                </div>
+                <div className="flex items-center gap-2 capitalize">
                   <span>•</span>
-                  <div className="flex items-center gap-2">
-                    <MapPin className="size-4" />
-                    <span>{project.location}</span>
+                  <span>{project.category.replace('-', ' ')}</span>
+                </div>
+                {project.location && (
+                  <>
+                    <span>•</span>
+                    <div className="flex items-center gap-2">
+                      <MapPin className="size-4" />
+                      <span>{project.location}</span>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Description */}
+            <div className="space-y-4">
+              <p className="text-lg md:text-xl font-light leading-relaxed text-foreground">
+                {project.description}
+              </p>
+            </div>
+
+            {/* Project Details */}
+            <div className="grid md:grid-cols-2 gap-6 pt-4">
+              {project.client && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm font-light tracking-wide uppercase text-muted-foreground">
+                    <User className="size-4" />
+                    <span>Client</span>
                   </div>
-                </>
+                  <p className="font-light text-foreground">{project.client}</p>
+                </div>
               )}
             </div>
-          </div>
-
-          <Separator />
-
-          {/* Description */}
-          <div className="space-y-4">
-            <p className="text-lg md:text-xl font-light leading-relaxed text-foreground">
-              {project.description}
-            </p>
-          </div>
-
-          {/* Technical Details */}
-          <div className="grid md:grid-cols-2 gap-6 pt-4">
-            {project.camera && (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-light tracking-wide uppercase text-muted-foreground">
-                  <Camera className="size-4" />
-                  <span>Camera</span>
-                </div>
-                <p className="font-light text-foreground">{project.camera}</p>
-              </div>
-            )}
-            {project.client && (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-light tracking-wide uppercase text-muted-foreground">
-                  <User className="size-4" />
-                  <span>Client</span>
-                </div>
-                <p className="font-light text-foreground">{project.client}</p>
-              </div>
-            )}
-          </div>
-        </motion.div>
-      </section>
+          </motion.div>
+        </section>
 
         {/* Image Gallery - Edge to edge */}
         <section className="py-12 md:py-16">

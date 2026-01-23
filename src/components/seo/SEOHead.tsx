@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { photographerInfo } from '@/data/photographer';
+import { designerInfo } from '@/data/designer';
 
 interface SEOHeadProps {
   title?: string;
@@ -16,17 +16,16 @@ interface SEOHeadProps {
 export function SEOHead({ 
   title, 
   description, 
-  // Photo by Oyemike Princewill on Unsplash
-  image = 'https://images.unsplash.com/photo-1662333085102-f6ae3be21c91?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3MDA2OTF8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NjI3Njk1NjB8&ixlib=rb-4.1.0&q=80&w=1080',
+  image = 'https://images.unsplash.com/photo-1662333085102-f6ae3be21c91?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080',
   type = 'website'
 }: SEOHeadProps) {
   const location = useLocation();
   
   const fullTitle = title 
-    ? `${title} | ${photographerInfo.name}` 
-    : `${photographerInfo.name} - ${photographerInfo.tagline}`;
+    ? `${title} | ${designerInfo.name}` 
+    : `${designerInfo.name} - ${designerInfo.tagline}`;
   
-  const defaultDescription = photographerInfo.heroIntroduction;
+  const defaultDescription = designerInfo.heroIntroduction;
   const fullDescription = description || defaultDescription;
   
   const baseUrl = window.location.origin;
@@ -59,7 +58,7 @@ export function SEOHead({
     updateMetaTag('og:type', type, true);
     updateMetaTag('og:url', fullUrl, true);
     updateMetaTag('og:image', image, true);
-    updateMetaTag('og:site_name', photographerInfo.name, true);
+    updateMetaTag('og:site_name', designerInfo.name, true);
     
     // Twitter Card tags
     updateMetaTag('twitter:card', 'summary_large_image');
@@ -68,8 +67,8 @@ export function SEOHead({
     updateMetaTag('twitter:image', image);
 
     // Additional SEO tags
-    updateMetaTag('author', photographerInfo.name);
-    updateMetaTag('keywords', `photography, ${photographerInfo.name}, professional photographer, ${photographerInfo.tagline}`);
+    updateMetaTag('author', designerInfo.name);
+    updateMetaTag('keywords', `graphic design, ${designerInfo.name}, brand identity, logo design, ${designerInfo.tagline}`);
   }, [fullTitle, fullDescription, fullUrl, image, type]);
 
   return null;
