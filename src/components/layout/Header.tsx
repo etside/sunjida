@@ -1,178 +1,144 @@
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, ShoppingBag, User } from 'lucide-react';
 import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useScrollPosition } from '@/hooks/useScrollPosition';
-import { useAuth } from '@/hooks/useAuth';
-import { ThemeToggle } from './ThemeToggle';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { designerInfo } from '@/data/designer';
+import { useScrollPosition } from '@/hooks/useScrollPosition';
+import { useLanguage } from '@/i18n/LanguageProvider';
+import { LanguageToggle } from './LanguageToggle';
+import { ThemeToggle } from './ThemeToggle';
+import { Logo } from '@/components/brand/Logo';
+import { solutions } from '@/data/solutions';
 import { cn } from '@/lib/utils';
-
-const navLinks = [
-  { name: 'Home', path: '/' },
-  { name: 'Portfolio', path: '/portfolio' },
-  { name: 'Shop', path: '/shop' },
-  { name: 'About', path: '/about' },
-  { name: 'Contact', path: '/contact' },
-];
 
 export function Header() {
   const location = useLocation();
   const { isScrolled } = useScrollPosition();
-  const { user, isAdmin } = useAuth();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
-  const isHomepage = location.pathname === '/';
-  const showSolidBg = isScrolled || !isHomepage;
+  const { t } = useLanguage();
+  const [open, setOpen] = useState(false);
+
+  const links = [
+    { key: 'nav.pricing', path: '/pricing' },
+    { key: 'nav.docs', path: '/docs' },
+    { key: 'nav.contact', path: '/contact' },
+  ];
 
   return (
     <motion.header
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
+      initial={{ y: -80, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-        showSolidBg
-          ? 'glass border-b border-border shadow-sm'
-          : 'bg-transparent'
+        'fixed top-0 inset-x-0 z-50 transition-all duration-300',
+        isScrolled ? 'glass border-b border-border' : 'bg-transparent'
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 md:h-20">
-          {/* Logo */}
-          <Link
-            to="/"
-            className="text-lg sm:text-xl font-medium tracking-wide text-foreground hover:text-primary transition-colors"
-          >
-            <motion.span
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-gradient"
-            >
-              {designerInfo.name.split(' ')[0]}
-            </motion.span>
+        <div className="flex items-center justify-between h-16">
+          <Link to="/" className="shrink-0">
+            <Logo />
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-1">
-            {navLinks.map((link, index) => (
-              <motion.div
-                key={link.path}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.1 * index }}
+          <nav className="hidden lg:flex items-center gap-1">
+            <div className="relative group">
+              <button className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-foreground/70 hover:text-foreground rounded-lg transition-colors">
+                {t('nav.solutions')}
+                <ChevronDown className="w-4 h-4" />
+              </button>
+              <div className="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                <div className="w-80 rounded-2xl border border-border bg-popover p-2 shadow-xl">
+                  {solutions.map((s) => (
+                    <Link
+                      key={s.slug}
+                      to={`/solutions/${s.slug}`}
+                      className="flex items-start gap-3 rounded-xl p-3 hover:bg-accent transition-colors"
+                    >
+                      <span className="mt-0.5 flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <s.icon className="size-4" />
+                      </span>
+                      <span>
+                        <span className="block text-sm font-medium text-foreground">{t(s.titleKey)}</span>
+                        <span className="block text-xs text-muted-foreground line-clamp-2">{t(s.descKey)}</span>
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {links.map((l) => (
+              <Link
+                key={l.path}
+                to={l.path}
+                className={cn(
+                  'px-3 py-2 text-sm font-medium rounded-lg transition-colors',
+                  location.pathname === l.path
+                    ? 'text-foreground'
+                    : 'text-foreground/70 hover:text-foreground'
+                )}
               >
-                <Link
-                  to={link.path}
-                  className={cn(
-                    "relative px-4 py-2 text-sm font-medium rounded-lg transition-colors",
-                    location.pathname === link.path
-                      ? 'text-primary bg-primary/10'
-                      : 'text-foreground/70 hover:text-foreground hover:bg-accent'
-                  )}
-                >
-                  {link.name}
-                </Link>
-              </motion.div>
+                {t(l.key)}
+              </Link>
             ))}
           </nav>
 
-          {/* Right Actions */}
           <div className="flex items-center gap-2">
+            <LanguageToggle />
             <ThemeToggle />
-            
-            {/* User/Account Link */}
-            <Link
-              to={user ? (isAdmin ? '/admin' : '/account') : '/auth'}
-              className="hidden md:flex items-center justify-center w-10 h-10 rounded-lg hover:bg-accent transition-colors"
-              title={user ? (isAdmin ? 'Admin Panel' : 'My Account') : 'Login'}
-            >
-              <User className={cn(
-                "w-5 h-5",
-                user ? "text-primary" : "text-muted-foreground"
-              )} />
-            </Link>
+            <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
+              <Link to="/auth">{t('nav.signin')}</Link>
+            </Button>
+            <Button asChild size="sm" className="hidden sm:inline-flex rounded-full px-5">
+              <Link to="/auth">{t('nav.start')}</Link>
+            </Button>
 
-            {/* Mobile Menu */}
-            <div className="md:hidden">
-              <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <div className="lg:hidden">
+              <Sheet open={open} onOpenChange={setOpen}>
                 <SheetTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="size-10"
-                    aria-label="Open menu"
-                  >
+                  <Button variant="ghost" size="icon" aria-label="Open menu">
                     <Menu className="size-5" />
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-full sm:w-80 p-0">
                   <div className="flex flex-col h-full">
-                    {/* Mobile Header */}
                     <div className="p-6 border-b border-border">
-                      <span className="text-xl font-medium text-gradient">
-                        {designerInfo.name}
-                      </span>
+                      <Logo />
                     </div>
-                    
-                    {/* Mobile Nav Links */}
-                    <nav className="flex-1 p-6 space-y-2">
-                      {navLinks.map((link) => (
+                    <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+                      <p className="px-3 py-2 text-xs uppercase tracking-widest text-muted-foreground">
+                        {t('nav.solutions')}
+                      </p>
+                      {solutions.map((s) => (
                         <Link
-                          key={link.path}
-                          to={link.path}
-                          onClick={() => setMobileMenuOpen(false)}
-                          className={cn(
-                            "flex items-center px-4 py-3 rounded-xl text-lg font-medium transition-colors",
-                            location.pathname === link.path
-                              ? 'text-primary bg-primary/10'
-                              : 'text-foreground hover:bg-accent'
-                          )}
+                          key={s.slug}
+                          to={`/solutions/${s.slug}`}
+                          onClick={() => setOpen(false)}
+                          className="flex items-center gap-3 px-3 py-3 rounded-xl text-base font-medium hover:bg-accent transition-colors"
                         >
-                          {link.name}
+                          <s.icon className="size-4 text-primary" />
+                          {t(s.titleKey)}
+                        </Link>
+                      ))}
+                      <div className="h-px bg-border my-3" />
+                      {links.map((l) => (
+                        <Link
+                          key={l.path}
+                          to={l.path}
+                          onClick={() => setOpen(false)}
+                          className="block px-3 py-3 rounded-xl text-base font-medium hover:bg-accent transition-colors"
+                        >
+                          {t(l.key)}
                         </Link>
                       ))}
                     </nav>
-                    
-                    {/* Mobile Footer */}
-                    <div className="p-6 border-t border-border space-y-4">
-                      {user ? (
-                        <>
-                          <Link
-                            to="/account"
-                            onClick={() => setMobileMenuOpen(false)}
-                            className="flex items-center gap-3 px-4 py-3 rounded-xl bg-accent text-foreground font-medium"
-                          >
-                            <User className="w-5 h-5" />
-                            My Account
-                          </Link>
-                          {isAdmin && (
-                            <Link
-                              to="/admin"
-                              onClick={() => setMobileMenuOpen(false)}
-                              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 text-primary font-medium"
-                            >
-                              <ShoppingBag className="w-5 h-5" />
-                              Admin Panel
-                            </Link>
-                          )}
-                        </>
-                      ) : (
-                        <Link
-                          to="/auth"
-                          onClick={() => setMobileMenuOpen(false)}
-                          className="flex items-center gap-3 px-4 py-3 rounded-xl bg-accent text-foreground font-medium"
-                        >
-                          <User className="w-5 h-5" />
-                          Login / Sign Up
-                        </Link>
-                      )}
-                      <p className="text-sm text-muted-foreground text-center">
-                        {designerInfo.email}
-                      </p>
+                    <div className="p-4 border-t border-border space-y-2">
+                      <Button asChild variant="outline" className="w-full rounded-full">
+                        <Link to="/auth" onClick={() => setOpen(false)}>{t('nav.signin')}</Link>
+                      </Button>
+                      <Button asChild className="w-full rounded-full">
+                        <Link to="/auth" onClick={() => setOpen(false)}>{t('nav.start')}</Link>
+                      </Button>
                     </div>
                   </div>
                 </SheetContent>
