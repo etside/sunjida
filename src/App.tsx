@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { LanguageProvider } from "@/i18n/LanguageProvider";
 import { Layout } from "@/components/layout/Layout";
 import { SkipToContent } from "@/components/ui/SkipToContent";
 import { LoadingFallback } from "@/components/ui/LoadingFallback";
@@ -14,9 +15,10 @@ import { AnimatePresence } from "framer-motion";
 import { lazy, Suspense } from "react";
 
 // Code-split route components
-const Index = lazy(() => import("./pages/Index"));
-const Portfolio = lazy(() => import("./pages/Portfolio"));
-const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
+const Home = lazy(() => import("./pages/Home"));
+const SolutionPage = lazy(() => import("./pages/SolutionPage"));
+const Pricing = lazy(() => import("./pages/Pricing"));
+const Docs = lazy(() => import("./pages/Docs"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Shop = lazy(() => import("./pages/Shop"));
@@ -36,9 +38,10 @@ function AnimatedRoutes() {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<PageTransition><Index /></PageTransition>} />
-        <Route path="/portfolio" element={<PageTransition><Portfolio /></PageTransition>} />
-        <Route path="/project/:slug" element={<PageTransition><ProjectDetail /></PageTransition>} />
+        <Route path="/" element={<PageTransition><Home /></PageTransition>} />
+        <Route path="/solutions/:slug" element={<PageTransition><SolutionPage /></PageTransition>} />
+        <Route path="/pricing" element={<PageTransition><Pricing /></PageTransition>} />
+        <Route path="/docs" element={<PageTransition><Docs /></PageTransition>} />
         <Route path="/about" element={<PageTransition><About /></PageTransition>} />
         <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
         <Route path="/shop" element={<PageTransition><Shop /></PageTransition>} />
@@ -60,18 +63,20 @@ const App = () => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <SkipToContent />
-            <Layout>
-              <Suspense fallback={<LoadingFallback />}>
-                <AnimatedRoutes />
-              </Suspense>
-            </Layout>
-          </BrowserRouter>
-        </TooltipProvider>
+        <LanguageProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <SkipToContent />
+              <Layout>
+                <Suspense fallback={<LoadingFallback />}>
+                  <AnimatedRoutes />
+                </Suspense>
+              </Layout>
+            </BrowserRouter>
+          </TooltipProvider>
+        </LanguageProvider>
       </ThemeProvider>
     </QueryClientProvider>
   </ErrorBoundary>
