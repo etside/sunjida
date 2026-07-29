@@ -21,12 +21,14 @@ export function SEOHead({
 }: SEOHeadProps) {
   const location = useLocation();
   
-  const fullTitle = title 
-    ? `${title} | ${designerInfo.name}` 
-    : `${designerInfo.name} - ${designerInfo.tagline}`;
-  
-  const defaultDescription = designerInfo.heroIntroduction;
+  const fullTitle = title
+    ? `${title.includes('SalesDaddy') ? title : `${title} | SalesDaddy`}`
+    : 'SalesDaddy — AI Voice & Chat Agents for Bangla and English Commerce';
+
+  const defaultDescription =
+    'AI voice agents, chat agents, live inventory access and webhooks for Bangla and English speaking businesses.';
   const fullDescription = description || defaultDescription;
+
   
   const baseUrl = window.location.origin;
   const fullUrl = `${baseUrl}${location.pathname}`;
