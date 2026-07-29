@@ -8,34 +8,31 @@
 
 :root {
   /* Core brand colors - Rose Gold / Burgundy theme */
-  --background: hsl(30 25% 98%);
-  --foreground: hsl(340 15% 15%);
+  --background: hsl(40 20% 98%);
+  --foreground: hsl(220 18% 10%);
   --card: hsl(0 0% 100%);
-  --card-foreground: hsl(340 15% 15%);
+  --card-foreground: hsl(220 18% 10%);
   --popover: hsl(0 0% 100%);
-  --popover-foreground: hsl(340 15% 15%);
-  
-  /* Primary - Deep Burgundy */
-  --primary: hsl(340 45% 35%);
+  --popover-foreground: hsl(220 18% 10%);
+
+  /* Primary - Signal orange */
+  --primary: hsl(18 92% 50%);
   --primary-foreground: hsl(0 0% 100%);
-  
-  /* Secondary - Soft cream */
-  --secondary: hsl(30 30% 95%);
-  --secondary-foreground: hsl(340 15% 20%);
-  
-  /* Muted - Warm gray */
-  --muted: hsl(30 15% 93%);
-  --muted-foreground: hsl(340 10% 45%);
-  
-  /* Accent - Rose gold */
-  --accent: hsl(15 35% 90%);
-  --accent-foreground: hsl(340 45% 30%);
-  
+
+  --secondary: hsl(40 14% 94%);
+  --secondary-foreground: hsl(220 18% 14%);
+
+  --muted: hsl(40 12% 94%);
+  --muted-foreground: hsl(220 8% 42%);
+
+  --accent: hsl(40 14% 93%);
+  --accent-foreground: hsl(18 92% 40%);
+
   --destructive: hsl(0 72% 51%);
   --destructive-foreground: hsl(0 0% 100%);
-  --border: hsl(30 20% 88%);
-  --input: hsl(30 20% 88%);
-  --ring: hsl(340 45% 35%);
+  --border: hsl(35 12% 88%);
+  --input: hsl(35 12% 88%);
+  --ring: hsl(18 92% 50%);
   --radius: 0.75rem;
   
   /* Sidebar */
@@ -62,30 +59,30 @@
 }
 
 .dark {
-  --background: hsl(340 15% 8%);
-  --foreground: hsl(30 25% 95%);
-  --card: hsl(340 15% 10%);
-  --card-foreground: hsl(30 25% 95%);
-  --popover: hsl(340 15% 10%);
-  --popover-foreground: hsl(30 25% 95%);
-  
-  --primary: hsl(350 55% 60%);
-  --primary-foreground: hsl(340 15% 8%);
-  
-  --secondary: hsl(340 15% 15%);
-  --secondary-foreground: hsl(30 25% 90%);
-  
-  --muted: hsl(340 15% 15%);
-  --muted-foreground: hsl(30 15% 60%);
-  
-  --accent: hsl(340 20% 18%);
-  --accent-foreground: hsl(350 55% 65%);
-  
+  --background: hsl(225 14% 6%);
+  --foreground: hsl(40 20% 96%);
+  --card: hsl(225 12% 9%);
+  --card-foreground: hsl(40 20% 96%);
+  --popover: hsl(225 12% 9%);
+  --popover-foreground: hsl(40 20% 96%);
+
+  --primary: hsl(20 95% 56%);
+  --primary-foreground: hsl(225 14% 6%);
+
+  --secondary: hsl(225 10% 14%);
+  --secondary-foreground: hsl(40 20% 94%);
+
+  --muted: hsl(225 10% 14%);
+  --muted-foreground: hsl(225 8% 62%);
+
+  --accent: hsl(225 10% 16%);
+  --accent-foreground: hsl(20 95% 62%);
+
   --destructive: hsl(0 62% 50%);
   --destructive-foreground: hsl(0 0% 100%);
-  --border: hsl(340 15% 18%);
-  --input: hsl(340 15% 18%);
-  --ring: hsl(350 55% 60%);
+  --border: hsl(225 10% 17%);
+  --input: hsl(225 10% 17%);
+  --ring: hsl(20 95% 56%);
   
   --sidebar-background: hsl(340 15% 8%);
   --sidebar-foreground: hsl(30 20% 90%);
@@ -188,13 +185,13 @@
   
   /* Selection color */
   ::selection {
-    background-color: hsl(340 45% 35% / 0.2);
-    color: hsl(340 45% 25%);
+    background-color: hsl(18 92% 50% / 0.18);
+    color: hsl(18 92% 30%);
   }
   
   .dark ::selection {
-    background-color: hsl(350 55% 60% / 0.3);
-    color: hsl(30 25% 95%);
+    background-color: hsl(20 95% 56% / 0.3);
+    color: hsl(40 20% 96%);
   }
 }
 
@@ -210,14 +207,14 @@
   
   /* Text gradient for headings */
   .text-gradient {
-    background: linear-gradient(135deg, hsl(340 45% 35%), hsl(350 60% 50%));
+    background: linear-gradient(135deg, hsl(18 92% 50%), hsl(38 95% 55%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
   
   .dark .text-gradient {
-    background: linear-gradient(135deg, hsl(350 55% 60%), hsl(38 65% 55%));
+    background: linear-gradient(135deg, hsl(20 95% 60%), hsl(45 95% 60%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -235,12 +232,22 @@
   
   /* Glass effect */
   .glass {
-    background: hsl(0 0% 100% / 0.8);
+    background: hsl(40 20% 98% / 0.72);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
   }
   
   .dark .glass {
-    background: hsl(340 15% 10% / 0.8);
+    background: hsl(225 14% 6% / 0.72);
+  }
+}
+
+@layer utilities {
+  .grid-bg {
+    background-image:
+      linear-gradient(to right, hsl(var(--grid-line, 220 10% 50%) / 0.08) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--grid-line, 220 10% 50%) / 0.08) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 30%, transparent 75%);
   }
 }
