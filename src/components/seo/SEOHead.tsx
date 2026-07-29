@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { designerInfo } from '@/data/designer';
 
 interface SEOHeadProps {
   title?: string;
@@ -60,7 +59,7 @@ export function SEOHead({
     updateMetaTag('og:type', type, true);
     updateMetaTag('og:url', fullUrl, true);
     updateMetaTag('og:image', image, true);
-    updateMetaTag('og:site_name', designerInfo.name, true);
+    updateMetaTag('og:site_name', 'SalesDaddy', true);
     
     // Twitter Card tags
     updateMetaTag('twitter:card', 'summary_large_image');
@@ -69,8 +68,8 @@ export function SEOHead({
     updateMetaTag('twitter:image', image);
 
     // Additional SEO tags
-    updateMetaTag('author', designerInfo.name);
-    updateMetaTag('keywords', `graphic design, ${designerInfo.name}, brand identity, logo design, ${designerInfo.tagline}`);
+    updateMetaTag('author', 'SalesDaddy');
+    updateMetaTag('keywords', 'AI voice agent, chat agent, Bangla AI, Bangladesh ecommerce automation, inventory API, webhooks');
   }, [fullTitle, fullDescription, fullUrl, image, type]);
 
   return null;
