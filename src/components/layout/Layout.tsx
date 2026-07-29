@@ -7,21 +7,20 @@ interface LayoutProps {
   children: ReactNode;
 }
 
-/**
- * Main layout wrapper component
- * Provides consistent header and footer across all pages
- * Homepage removes top padding to allow header overlay on hero
- */
+/** Routes that render their own hero spacing under the fixed header */
+const FULL_BLEED = ['/', '/pricing', '/docs'];
+
 export function Layout({ children }: LayoutProps) {
   const location = useLocation();
-  const isHomepage = location.pathname === '/';
+  const path = location.pathname;
+  const fullBleed = FULL_BLEED.includes(path) || path.startsWith('/solutions/');
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main 
-        id="main-content" 
-        className={`flex-1 ${isHomepage ? '' : 'pt-16'}`}
+      <main
+        id="main-content"
+        className={`flex-1 ${fullBleed ? '' : 'pt-16'}`}
         tabIndex={-1}
       >
         {children}
