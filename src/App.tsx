@@ -53,7 +53,8 @@ function AnimatedRoutes() {
         <Route path="/order-success" element={<PageTransition><OrderSuccess /></PageTransition>} />
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
-        </Route>
+          <Route path="agent" element={<AgentSettings />} />
+
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
     </AnimatePresence>
