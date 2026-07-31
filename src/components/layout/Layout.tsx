@@ -27,6 +27,8 @@ export function Layout({ children }: LayoutProps) {
         {children}
       </main>
       <Footer />
+      <ChatWidget />
     </div>
+
   );
 }
