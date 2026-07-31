@@ -54,6 +54,8 @@ function AnimatedRoutes() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="agent" element={<AgentSettings />} />
+        </Route>
+
 
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
