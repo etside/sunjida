@@ -52,7 +52,8 @@ export async function buildCatalogContext(db: ReturnType<typeof adminClient>) {
 
   const lines = data.map((p: Record<string, unknown>) => {
     const stock = Number(p.stock_quantity ?? 0);
-    return `- ${p.name} | Price: BDT ${p.price} | ${stock > 0 ? `In stock (${stock})` : "Out of stock"}`;
+    const price = p.sale_price ?? p.price;
+    return `- ${p.name} | Price: BDT ${price} | ${p.color ?? ""} ${p.fabric_type ?? ""} | ${stock > 0 ? `In stock (${stock})` : "Out of stock"}`;
   });
 
   return `\n\nLIVE PRODUCT CATALOG (authoritative — never invent products, prices or stock):\n${lines.join("\n")}`;
