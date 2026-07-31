@@ -1,1 +1,7 @@
 project_id = "yplgzmxzrslofnuagfaz"
+
+[functions.agent-chat]
+verify_jwt = false
+
+[functions.meta-webhook]
+verify_jwt = false
