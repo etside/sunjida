@@ -27,6 +27,7 @@ const Auth = lazy(() => import("./pages/Auth"));
 const Account = lazy(() => import("./pages/Account"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
 const AgentSettings = lazy(() => import("./pages/admin/AgentSettings"));
+const AgentAnalytics = lazy(() => import("./pages/admin/AgentAnalytics"));
 const Checkout = lazy(() => import("./pages/Checkout"));
 const OrderSuccess = lazy(() => import("./pages/OrderSuccess"));
 const NotFound = lazy(() => import("./pages/NotFound"));
