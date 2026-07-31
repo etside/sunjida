@@ -30,5 +30,6 @@ export function Layout({ children }: LayoutProps) {
       <ChatWidget />
     </div>
 
+
   );
 }
