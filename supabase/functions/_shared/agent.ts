@@ -43,8 +43,9 @@ export async function getSettings(db: ReturnType<typeof adminClient>): Promise<A
 /** Live product/stock context so the agent never promises what cannot be shipped. */
 export async function buildCatalogContext(db: ReturnType<typeof adminClient>) {
   const { data } = await db
-    .from("products")
-    .select("name, price, stock_quantity, description")
+    .from("sharee_products")
+    .select("name, price, sale_price, stock_quantity, color, fabric_type")
+    .eq("is_active", true)
     .limit(40);
 
   if (!data?.length) return "";
