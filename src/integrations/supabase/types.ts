@@ -14,6 +14,104 @@ export type Database = {
   }
   public: {
     Tables: {
+      agent_conversations: {
+        Row: {
+          channel: string
+          created_at: string
+          customer_name: string | null
+          external_id: string | null
+          id: string
+          lang: string
+          updated_at: string
+        }
+        Insert: {
+          channel?: string
+          created_at?: string
+          customer_name?: string | null
+          external_id?: string | null
+          id?: string
+          lang?: string
+          updated_at?: string
+        }
+        Update: {
+          channel?: string
+          created_at?: string
+          customer_name?: string | null
+          external_id?: string | null
+          id?: string
+          lang?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      agent_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          role: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          role: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "agent_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_settings: {
+        Row: {
+          business_name: string
+          created_at: string
+          greeting_bn: string
+          greeting_en: string
+          id: string
+          instructions: string
+          is_enabled: boolean
+          model: string
+          updated_at: string
+        }
+        Insert: {
+          business_name?: string
+          created_at?: string
+          greeting_bn?: string
+          greeting_en?: string
+          id?: string
+          instructions?: string
+          is_enabled?: boolean
+          model?: string
+          updated_at?: string
+        }
+        Update: {
+          business_name?: string
+          created_at?: string
+          greeting_bn?: string
+          greeting_en?: string
+          id?: string
+          instructions?: string
+          is_enabled?: boolean
+          model?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       contact_submissions: {
         Row: {
           created_at: string
@@ -41,6 +139,51 @@ export type Database = {
           message?: string
           name?: string
           project_type?: string | null
+        }
+        Relationships: []
+      }
+      meta_channels: {
+        Row: {
+          access_token: string
+          app_secret: string | null
+          channel: string
+          created_at: string
+          display_name: string
+          id: string
+          is_active: boolean
+          last_event_at: string | null
+          page_id: string | null
+          phone_number_id: string | null
+          updated_at: string
+          verify_token: string
+        }
+        Insert: {
+          access_token: string
+          app_secret?: string | null
+          channel: string
+          created_at?: string
+          display_name: string
+          id?: string
+          is_active?: boolean
+          last_event_at?: string | null
+          page_id?: string | null
+          phone_number_id?: string | null
+          updated_at?: string
+          verify_token: string
+        }
+        Update: {
+          access_token?: string
+          app_secret?: string | null
+          channel?: string
+          created_at?: string
+          display_name?: string
+          id?: string
+          is_active?: boolean
+          last_event_at?: string | null
+          page_id?: string | null
+          phone_number_id?: string | null
+          updated_at?: string
+          verify_token?: string
         }
         Relationships: []
       }
