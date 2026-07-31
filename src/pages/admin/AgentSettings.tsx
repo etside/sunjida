@@ -172,6 +172,9 @@ export default function AgentSettingsPage() {
         Your bilingual assistant runs on Lovable AI — no API key, no code. Configure it here and connect Messenger or
         WhatsApp from your Meta Business account.
       </p>
+      <Link to="/admin/analytics" className="mt-3 inline-flex text-sm font-medium text-primary hover:underline">
+        View analytics & AI cost estimator →
+      </Link>
 
       {/* Agent settings */}
       <section className="mt-10 rounded-xl border border-border bg-card p-6">
