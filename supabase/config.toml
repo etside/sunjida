@@ -8,3 +8,12 @@ verify_jwt = false
 
 [functions.business-api]
 verify_jwt = false
+
+[functions.super-admin]
+verify_jwt = true
+
+[functions.voice-agent]
+verify_jwt = true
+
+[functions.google-sheets-sync]
+verify_jwt = true

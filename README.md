@@ -1,77 +1,136 @@
-# Welcome to your Lovable project
+# Sales Daddy — Bangla & English AI Voice and Chat Agents
 
-## Project info
+Multi-tenant SaaS platform for AI-powered customer service with voice and chat capabilities. Built for Bangladeshi businesses.
 
-**URL**: https://lovable.dev/projects/6fd12b81-631e-49d3-83b3-86e8b3fab3ae
+## Live
 
-## How can I edit this code?
+- **Dashboard:** https://salesdaddy.lovable.app
+- **Supabase:** https://yplgzmxzrslofnuagfaz.supabase.co
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+- **Frontend:** React 18 + TypeScript + Vite + Tailwind CSS v4 + shadcn/ui
+- **Backend:** Supabase (PostgreSQL + Edge Functions + Auth)
+- **Hosting:** Lovable (Netlify under the hood)
+- **CI/CD:** GitHub Actions
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/6fd12b81-631e-49d3-83b3-86e8b3fab3ae) and start prompting.
+## Project Structure
 
-Changes made via Lovable will be committed automatically to this repo.
+```
+src/
+├── components/
+│   ├── admin/           # SuperAdminPanel, CredentialsManager, LLMSwitcher, TenantOverview
+│   ├── chat/            # Chat UI components
+│   ├── dashboard/       # InventoryPanel, order/product management
+│   ├── onboarding/      # OnboardingChat flow
+│   └── ui/              # shadcn/ui primitives
+├── contexts/
+│   ├── TenantContext.tsx # Multi-tenant context (tenant_id from profiles)
+│   └── FeatureGateContext.tsx # Plan-based feature gating
+├── pages/tenant/        # ClientPanel (per-tenant dashboard)
+├── services/
+│   └── tenantApi.ts     # All Supabase + Edge Function calls
+└── integrations/supabase/
+    ├── client.ts        # Supabase client
+    └── types.ts         # Auto-generated database types
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+supabase/
+├── functions/
+│   ├── agent-chat/      # AI chat endpoint
+│   ├── meta-webhook/    # WhatsApp/Messenger webhook
+│   ├── super-admin/     # Platform admin API
+│   ├── voice-agent/     # Voice processing with OpenAI
+│   └── google-sheets-sync/ # Import inventory from Google Sheets
+└── migrations/          # Database migrations
 ```
 
-**Edit a file directly in GitHub**
+## Features
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- **Multi-tenancy:** Each business gets isolated data via `tenant_id`
+- **Feature Gating:** Plan-based access (free → starter → pro → enterprise)
+- **AI Agent:** Chat and voice support in Bangla and English
+- **Inventory Management:** Manual entry or Google Sheets sync
+- **Super Admin Panel:** Tenant management, credentials, audit logs
+- **Meta Channels:** WhatsApp, Messenger, Instagram integration
+- **Onboarding:** Guided setup flow for new tenants
 
-**Use GitHub Codespaces**
+## Local Development
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```bash
+# Install dependencies
+npm install
 
-## What technologies are used for this project?
+# Set up environment
+cp .env.example .env
+# Edit .env with your Supabase credentials
 
-This project is built with:
+# Start dev server
+npm run dev
+# Opens at http://localhost:8080
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+# Type check
+npx tsc --noEmit
 
-## How can I deploy this project?
+# Build
+npm run build
+```
 
-Simply open [Lovable](https://lovable.dev/projects/6fd12b81-631e-49d3-83b3-86e8b3fab3ae) and click on Share -> Publish.
+## Environment Variables
 
-## Can I connect a custom domain to my Lovable project?
+```env
+VITE_SUPABASE_URL=https://yplgzmxzrslofnuagfaz.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=eyJ...
+VITE_SUPABASE_PROJECT_ID=yplgzmxzrslofnuagfaz
+```
 
-Yes, you can!
+## Deployment
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Frontend (Automatic)
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Push to `main` triggers GitHub Actions which:
+1. Runs lint + type check + build
+2. Deploys to Lovable → live at https://salesdaddy.lovable.app
 
-# ./tailwind-plus folder:
+### Supabase Edge Functions (Automatic)
 
-The tailwind-plus folder contains tailwind components and themes to be used as inspiration for the project. DO NOT REMOVE THE FOLDER UNLESS SPECIFICALLY TOLD TO DO SO
+Push to `main` with changes in `supabase/` triggers:
+1. Runs database migrations
+2. Deploys all Edge Functions
+3. Sets function secrets
+
+### Required GitHub Secrets
+
+| Secret | Purpose |
+|--------|---------|
+| `LOVABLE_TOKEN` | Lovable deployment auth |
+| `LOVABLE_PROJECT_ID` | Lovable project ID |
+| `SUPABASE_ACCESS_TOKEN` | Supabase API token |
+| `SUPABASE_PROJECT_ID` | Supabase project ref (set as Variable, not Secret) |
+| `OPENAI_API_KEY` | OpenAI for voice agent |
+| `GOOGLE_SERVICE_ACCOUNT_JSON` | Google Sheets API access |
+| `VOICE_AGENT_MODEL` | (Optional) Voice model override |
+| `VOICE_AGENT_MAX_TOKENS` | (Optional) Max tokens override |
+
+## Supabase Tables
+
+| Table | Purpose |
+|-------|---------|
+| `tenants` | Business accounts (name, plan, feature_gates, sales_daddy_prompt) |
+| `profiles` | User profiles with `tenant_id` |
+| `credentials` | API keys per tenant (encrypted) |
+| `inventory_products` | Product catalog |
+| `agent_conversations` | Chat/voice sessions |
+| `agent_messages` | Individual messages |
+| `audit_logs` | Admin action history |
+| `feature_gate_definitions` | Feature → plan mappings |
+| `meta_channels` | WhatsApp/Messenger configs |
+| `orders` / `order_items` | Order management |
+
+## Admin Access
+
+- `/super-admin` — Platform admin panel (requires `super_admin` role)
+- `/tenant/client-panel` — Per-tenant dashboard with feature-gated tabs
+
+## License
+
+Private — All rights reserved.
