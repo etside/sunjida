@@ -16,6 +16,7 @@ import { lazy, Suspense } from "react";
 
 // Code-split route components
 const Home = lazy(() => import("./pages/Home"));
+import { AppLayout } from "@/components/app/AppLayout";
 const SolutionPage = lazy(() => import("./pages/SolutionPage"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const Docs = lazy(() => import("./pages/Docs"));
