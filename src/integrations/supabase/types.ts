@@ -16,33 +16,57 @@ export type Database = {
     Tables: {
       agent_conversations: {
         Row: {
+          business_id: string | null
           channel: string
           created_at: string
+          customer_contact: string | null
           customer_name: string | null
           external_id: string | null
           id: string
           lang: string
+          lead_id: string | null
           updated_at: string
         }
         Insert: {
+          business_id?: string | null
           channel?: string
           created_at?: string
+          customer_contact?: string | null
           customer_name?: string | null
           external_id?: string | null
           id?: string
           lang?: string
+          lead_id?: string | null
           updated_at?: string
         }
         Update: {
+          business_id?: string | null
           channel?: string
           created_at?: string
+          customer_contact?: string | null
           customer_name?: string | null
           external_id?: string | null
           id?: string
           lang?: string
+          lead_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "agent_conversations_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_conversations_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       agent_messages: {
         Row: {
@@ -78,6 +102,7 @@ export type Database = {
       }
       agent_settings: {
         Row: {
+          business_id: string | null
           business_name: string
           created_at: string
           greeting_bn: string
@@ -89,6 +114,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          business_id?: string | null
           business_name?: string
           created_at?: string
           greeting_bn?: string
@@ -100,6 +126,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          business_id?: string | null
           business_name?: string
           created_at?: string
           greeting_bn?: string
@@ -109,6 +136,259 @@ export type Database = {
           is_enabled?: boolean
           model?: string
           updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_settings_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      business_api_keys: {
+        Row: {
+          business_id: string
+          created_at: string
+          id: string
+          key_hash: string
+          key_prefix: string
+          last_used_at: string | null
+          name: string
+          revoked_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          id?: string
+          key_hash: string
+          key_prefix: string
+          last_used_at?: string | null
+          name?: string
+          revoked_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          id?: string
+          key_hash?: string
+          key_prefix?: string
+          last_used_at?: string | null
+          name?: string
+          revoked_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_api_keys_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      business_integrations: {
+        Row: {
+          auth_header_name: string | null
+          auth_header_value: string | null
+          business_id: string
+          created_at: string
+          extra_headers: Json
+          id: string
+          last_error: string | null
+          last_status: string | null
+          last_sync_at: string | null
+          order_create_url: string | null
+          product_detail_url: string | null
+          products_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          auth_header_name?: string | null
+          auth_header_value?: string | null
+          business_id: string
+          created_at?: string
+          extra_headers?: Json
+          id?: string
+          last_error?: string | null
+          last_status?: string | null
+          last_sync_at?: string | null
+          order_create_url?: string | null
+          product_detail_url?: string | null
+          products_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          auth_header_name?: string | null
+          auth_header_value?: string | null
+          business_id?: string
+          created_at?: string
+          extra_headers?: Json
+          id?: string
+          last_error?: string | null
+          last_status?: string | null
+          last_sync_at?: string | null
+          order_create_url?: string | null
+          product_detail_url?: string | null
+          products_url?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_integrations_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: true
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      business_products: {
+        Row: {
+          business_id: string
+          created_at: string
+          currency: string
+          description: string | null
+          external_id: string
+          id: string
+          image_url: string | null
+          name: string
+          price: number | null
+          product_url: string | null
+          raw: Json | null
+          stock_quantity: number | null
+          synced_at: string
+          updated_at: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          external_id: string
+          id?: string
+          image_url?: string | null
+          name: string
+          price?: number | null
+          product_url?: string | null
+          raw?: Json | null
+          stock_quantity?: number | null
+          synced_at?: string
+          updated_at?: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          external_id?: string
+          id?: string
+          image_url?: string | null
+          name?: string
+          price?: number | null
+          product_url?: string | null
+          raw?: Json | null
+          stock_quantity?: number | null
+          synced_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_products_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      business_training_docs: {
+        Row: {
+          business_id: string
+          content: string
+          created_at: string
+          doc_type: string
+          id: string
+          is_enabled: boolean
+          lang: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          business_id: string
+          content: string
+          created_at?: string
+          doc_type?: string
+          id?: string
+          is_enabled?: boolean
+          lang?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          business_id?: string
+          content?: string
+          created_at?: string
+          doc_type?: string
+          id?: string
+          is_enabled?: boolean
+          lang?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_training_docs_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      businesses: {
+        Row: {
+          contact_email: string | null
+          created_at: string
+          id: string
+          industry: string | null
+          is_active: boolean
+          name: string
+          owner_id: string
+          plan: string
+          slug: string
+          updated_at: string
+          website_url: string | null
+        }
+        Insert: {
+          contact_email?: string | null
+          created_at?: string
+          id?: string
+          industry?: string | null
+          is_active?: boolean
+          name: string
+          owner_id: string
+          plan?: string
+          slug: string
+          updated_at?: string
+          website_url?: string | null
+        }
+        Update: {
+          contact_email?: string | null
+          created_at?: string
+          id?: string
+          industry?: string | null
+          is_active?: boolean
+          name?: string
+          owner_id?: string
+          plan?: string
+          slug?: string
+          updated_at?: string
+          website_url?: string | null
         }
         Relationships: []
       }
@@ -142,10 +422,155 @@ export type Database = {
         }
         Relationships: []
       }
+      lead_orders: {
+        Row: {
+          business_id: string
+          created_at: string
+          currency: string
+          customer_email: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          external_order_ref: string | null
+          id: string
+          items: Json
+          lead_id: string | null
+          push_attempts: number
+          push_response: Json | null
+          push_status: string
+          shipping_address: string | null
+          subtotal: number
+          total: number
+          updated_at: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          external_order_ref?: string | null
+          id?: string
+          items?: Json
+          lead_id?: string | null
+          push_attempts?: number
+          push_response?: Json | null
+          push_status?: string
+          shipping_address?: string | null
+          subtotal?: number
+          total?: number
+          updated_at?: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          external_order_ref?: string | null
+          id?: string
+          items?: Json
+          lead_id?: string | null
+          push_attempts?: number
+          push_response?: Json | null
+          push_status?: string
+          shipping_address?: string | null
+          subtotal?: number
+          total?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_orders_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_orders_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads: {
+        Row: {
+          business_id: string
+          category: string
+          channel: string
+          conversation_id: string | null
+          created_at: string
+          customer_contact: string | null
+          customer_name: string | null
+          estimated_value: number | null
+          id: string
+          intent_score: number
+          lang: string
+          notes: string | null
+          stage: string
+          summary: string | null
+          updated_at: string
+        }
+        Insert: {
+          business_id: string
+          category?: string
+          channel?: string
+          conversation_id?: string | null
+          created_at?: string
+          customer_contact?: string | null
+          customer_name?: string | null
+          estimated_value?: number | null
+          id?: string
+          intent_score?: number
+          lang?: string
+          notes?: string | null
+          stage?: string
+          summary?: string | null
+          updated_at?: string
+        }
+        Update: {
+          business_id?: string
+          category?: string
+          channel?: string
+          conversation_id?: string | null
+          created_at?: string
+          customer_contact?: string | null
+          customer_name?: string | null
+          estimated_value?: number | null
+          id?: string
+          intent_score?: number
+          lang?: string
+          notes?: string | null
+          stage?: string
+          summary?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "agent_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       meta_channels: {
         Row: {
           access_token: string
           app_secret: string | null
+          business_id: string | null
           channel: string
           created_at: string
           display_name: string
@@ -160,6 +585,7 @@ export type Database = {
         Insert: {
           access_token: string
           app_secret?: string | null
+          business_id?: string | null
           channel: string
           created_at?: string
           display_name: string
@@ -174,6 +600,7 @@ export type Database = {
         Update: {
           access_token?: string
           app_secret?: string | null
+          business_id?: string | null
           channel?: string
           created_at?: string
           display_name?: string
@@ -185,7 +612,15 @@ export type Database = {
           updated_at?: string
           verify_token?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "meta_channels_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       order_items: {
         Row: {
@@ -624,6 +1059,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      owns_business: { Args: { _business_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "customer"

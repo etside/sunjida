@@ -16,6 +16,7 @@ import { lazy, Suspense } from "react";
 
 // Code-split route components
 const Home = lazy(() => import("./pages/Home"));
+import { AppLayout } from "@/components/app/AppLayout";
 const SolutionPage = lazy(() => import("./pages/SolutionPage"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const Docs = lazy(() => import("./pages/Docs"));
@@ -30,6 +31,12 @@ const AgentSettings = lazy(() => import("./pages/admin/AgentSettings"));
 const AgentAnalytics = lazy(() => import("./pages/admin/AgentAnalytics"));
 const Checkout = lazy(() => import("./pages/Checkout"));
 const OrderSuccess = lazy(() => import("./pages/OrderSuccess"));
+const AppOnboarding = lazy(() => import("./pages/app/Onboarding"));
+const AppOverview = lazy(() => import("./pages/app/Overview"));
+const AppLeads = lazy(() => import("./pages/app/Leads"));
+const AppTraining = lazy(() => import("./pages/app/Training"));
+const AppIntegration = lazy(() => import("./pages/app/Integration"));
+const AppChannels = lazy(() => import("./pages/app/Channels"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -57,6 +64,16 @@ function AnimatedRoutes() {
           <Route path="agent" element={<AgentSettings />} />
           <Route path="analytics" element={<AgentAnalytics />} />
         </Route>
+        <Route path="/app/onboarding" element={<AppOnboarding />} />
+        <Route path="/app" element={<AppLayout />}>
+          <Route index element={<AppOverview />} />
+          <Route path="leads" element={<AppLeads />} />
+          <Route path="training" element={<AppTraining />} />
+          <Route path="integration" element={<AppIntegration />} />
+          <Route path="channels" element={<AppChannels />} />
+        </Route>
+
+
 
 
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
