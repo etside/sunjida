@@ -48,7 +48,7 @@ export default function Integration() {
         .eq('business_id', business.id)
         .order('created_at', { ascending: false }),
     ]);
-    if (integration.data) setForm({ ...integration.data });
+    if (integration.data) setForm(integration.data as unknown as Integration);
     setKeys(keyRows.data ?? []);
   }, [business]);
 
@@ -60,16 +60,16 @@ export default function Integration() {
     e.preventDefault();
     if (!business) return;
     setBusy(true);
-    const { error } = await supabase.from('business_integrations').upsert(
-      {
-        business_id: business.id,
-        product_feed_url: form.product_feed_url || null,
-        stock_check_url: form.stock_check_url || null,
-        order_webhook_url: form.order_webhook_url || null,
-        webhook_secret: form.webhook_secret || null,
-      },
-      { onConflict: 'business_id' },
-    );
+    const payload = {
+      business_id: business.id,
+      product_feed_url: form.product_feed_url || null,
+      stock_check_url: form.stock_check_url || null,
+      order_webhook_url: form.order_webhook_url || null,
+      webhook_secret: form.webhook_secret || null,
+    };
+    const { error } = await supabase
+      .from('business_integrations')
+      .upsert(payload as never, { onConflict: 'business_id' });
     setBusy(false);
     toast(
       error
