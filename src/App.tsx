@@ -64,6 +64,16 @@ function AnimatedRoutes() {
           <Route path="agent" element={<AgentSettings />} />
           <Route path="analytics" element={<AgentAnalytics />} />
         </Route>
+        <Route path="/app/onboarding" element={<AppOnboarding />} />
+        <Route path="/app" element={<AppLayout />}>
+          <Route index element={<AppOverview />} />
+          <Route path="leads" element={<AppLeads />} />
+          <Route path="training" element={<AppTraining />} />
+          <Route path="integration" element={<AppIntegration />} />
+          <Route path="channels" element={<AppChannels />} />
+        </Route>
+
+
 
 
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
