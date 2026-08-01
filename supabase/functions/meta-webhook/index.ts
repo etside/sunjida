@@ -1,16 +1,22 @@
-// Meta (Messenger + WhatsApp) webhook. Verifies Meta's signature, then replies with Lovable AI.
+// Meta (Messenger + Instagram + WhatsApp) webhook. Each business brings their own Meta app.
 import {
   adminClient,
   buildCatalogContext,
   buildSystemPrompt,
-  completeChat,
+  buildTrainingContext,
+  callGateway,
+  canPlaceOrders,
+  classifyAndUpsertLead,
   getSettings,
+  placeOrderTool,
+  runPlaceOrder,
 } from "../_shared/agent.ts";
 
 const GRAPH = "https://graph.facebook.com/v21.0";
 
 type Channel = {
   id: string;
+  business_id: string | null;
   channel: string;
   page_id: string | null;
   phone_number_id: string | null;
@@ -39,22 +45,23 @@ async function validSignature(secret: string, raw: string, header: string | null
   return diff === 0;
 }
 
-async function sendMessenger(ch: Channel, recipientId: string, text: string) {
+async function sendMeta(ch: Channel, recipient: string, text: string) {
+  if (ch.channel === "whatsapp") {
+    const res = await fetch(`${GRAPH}/${ch.phone_number_id}/messages`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${ch.access_token}` },
+      body: JSON.stringify({ messaging_product: "whatsapp", to: recipient, type: "text", text: { body: text } }),
+    });
+    if (!res.ok) console.error(`WhatsApp send failed [${res.status}]: ${await res.text()}`);
+    return;
+  }
+  // Messenger and Instagram Direct share the same Send API surface.
   const res = await fetch(`${GRAPH}/me/messages?access_token=${encodeURIComponent(ch.access_token)}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ recipient: { id: recipientId }, messaging_type: "RESPONSE", message: { text } }),
+    body: JSON.stringify({ recipient: { id: recipient }, messaging_type: "RESPONSE", message: { text } }),
   });
-  if (!res.ok) console.error(`Messenger send failed [${res.status}]: ${await res.text()}`);
-}
-
-async function sendWhatsApp(ch: Channel, to: string, text: string) {
-  const res = await fetch(`${GRAPH}/${ch.phone_number_id}/messages`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${ch.access_token}` },
-    body: JSON.stringify({ messaging_product: "whatsapp", to, type: "text", text: { body: text } }),
-  });
-  if (!res.ok) console.error(`WhatsApp send failed [${res.status}]: ${await res.text()}`);
+  if (!res.ok) console.error(`${ch.channel} send failed [${res.status}]: ${await res.text()}`);
 }
 
 Deno.serve(async (req) => {
@@ -78,7 +85,7 @@ Deno.serve(async (req) => {
 
   const { data: channels } = await db
     .from("meta_channels")
-    .select("id, channel, page_id, phone_number_id, access_token, app_secret, verify_token")
+    .select("id, business_id, channel, page_id, phone_number_id, access_token, app_secret, verify_token")
     .eq("is_active", true);
 
   const list = (channels ?? []) as Channel[];
@@ -104,15 +111,24 @@ Deno.serve(async (req) => {
     return new Response("Bad payload", { status: 400 });
   }
 
-  // 3. Normalise Messenger and WhatsApp payloads into a single shape.
+  // 3. Normalise Messenger, Instagram and WhatsApp payloads into one shape.
   const incoming: Array<{ channel: string; from: string; text: string; pageId?: string; phoneId?: string }> = [];
   const object = payload.object as string | undefined;
+
   for (const entry of ((payload.entry as Record<string, unknown>[]) ?? [])) {
-    if (object === "page") {
+    if (object === "page" || object === "instagram") {
       for (const m of ((entry.messaging as Record<string, unknown>[]) ?? [])) {
         const text = (m.message as Record<string, unknown>)?.text as string | undefined;
         const from = (m.sender as Record<string, string>)?.id;
-        if (text && from) incoming.push({ channel: "messenger", from, text, pageId: entry.id as string });
+        const isEcho = (m.message as Record<string, unknown>)?.is_echo === true;
+        if (text && from && !isEcho) {
+          incoming.push({
+            channel: object === "instagram" ? "instagram" : "messenger",
+            from,
+            text,
+            pageId: entry.id as string,
+          });
+        }
       }
     } else if (object === "whatsapp_business_account") {
       for (const change of ((entry.changes as Record<string, unknown>[]) ?? [])) {
@@ -129,9 +145,6 @@ Deno.serve(async (req) => {
 
   if (!incoming.length) return new Response("EVENT_RECEIVED", { status: 200 });
 
-  const settings = await getSettings(db);
-  const catalog = await buildCatalogContext(db);
-
   for (const event of incoming) {
     const channel =
       list.find(
@@ -141,21 +154,32 @@ Deno.serve(async (req) => {
       ) ?? (signer.channel === event.channel ? signer : null);
     if (!channel) continue;
 
+    const businessId = channel.business_id;
+
     try {
-      // Conversation memory per customer.
+      const settings = await getSettings(db, businessId);
+      if (!settings.is_enabled) continue;
+
+      // Conversation memory per customer, per business.
       const externalId = `${event.channel}:${event.from}`;
-      let { data: convo } = await db
+      let query = db
         .from("agent_conversations")
-        .select("id")
+        .select("id, lead_id")
         .eq("channel", event.channel)
-        .eq("external_id", externalId)
-        .maybeSingle();
+        .eq("external_id", externalId);
+      query = businessId ? query.eq("business_id", businessId) : query.is("business_id", null);
+      let { data: convo } = await query.maybeSingle();
 
       if (!convo) {
         const inserted = await db
           .from("agent_conversations")
-          .insert({ channel: event.channel, external_id: externalId })
-          .select("id")
+          .insert({
+            channel: event.channel,
+            external_id: externalId,
+            business_id: businessId,
+            customer_contact: event.from,
+          })
+          .select("id, lead_id")
           .single();
         convo = inserted.data;
       }
@@ -171,18 +195,72 @@ Deno.serve(async (req) => {
         .from("agent_messages")
         .insert({ conversation_id: convo!.id, role: "user", content: event.text });
 
-      const reply = await completeChat(settings.model, [
-        { role: "system", content: buildSystemPrompt(settings, catalog, `${event.channel} (Meta)`) },
+      const canOrder = businessId ? await canPlaceOrders(db, businessId) : false;
+      const system = buildSystemPrompt(settings, {
+        catalog: await buildCatalogContext(db, businessId),
+        training: await buildTrainingContext(db, businessId),
+        channel: `${event.channel} (Meta)`,
+        canOrder,
+      });
+
+      const turns = [
         ...((history ?? []) as Array<{ role: string; content: string }>),
         { role: "user", content: event.text },
-      ]);
+      ];
+      const convoMessages: Array<Record<string, unknown>> = [{ role: "system", content: system }, ...turns];
+
+      let reply = "";
+      for (let hop = 0; hop < 3; hop++) {
+        const res = await callGateway({
+          model: settings.model,
+          messages: convoMessages,
+          ...(canOrder && businessId ? { tools: [placeOrderTool] } : {}),
+        });
+        if (!res.ok) {
+          console.error(`AI gateway failed [${res.status}]: ${await res.text()}`);
+          break;
+        }
+        const message = (await res.json())?.choices?.[0]?.message as
+          | { content?: string; tool_calls?: Array<{ id: string; function: { name: string; arguments: string } }> }
+          | undefined;
+
+        const calls = message?.tool_calls ?? [];
+        if (!calls.length) {
+          reply = message?.content ?? "";
+          break;
+        }
+        convoMessages.push(message as Record<string, unknown>);
+        for (const call of calls) {
+          let result: unknown = { success: false, message: "Unknown tool." };
+          if (call.function.name === "place_order" && businessId) {
+            result = await runPlaceOrder(
+              db,
+              businessId,
+              convo!.lead_id ?? null,
+              JSON.parse(call.function.arguments || "{}"),
+            );
+          }
+          convoMessages.push({ role: "tool", tool_call_id: call.id, content: JSON.stringify(result) });
+        }
+      }
 
       if (reply) {
         await db
           .from("agent_messages")
           .insert({ conversation_id: convo!.id, role: "assistant", content: reply });
-        if (event.channel === "messenger") await sendMessenger(channel, event.from, reply);
-        else await sendWhatsApp(channel, event.from, reply);
+        await sendMeta(channel, event.from, reply);
+
+        if (businessId) {
+          await classifyAndUpsertLead(db, {
+            businessId,
+            conversationId: convo!.id,
+            leadId: convo!.lead_id ?? null,
+            channel: event.channel,
+            model: settings.model,
+            transcript: [...turns, { role: "assistant", content: reply }],
+            customerContact: event.from,
+          });
+        }
       }
 
       await db
