@@ -30,6 +30,12 @@ const AgentSettings = lazy(() => import("./pages/admin/AgentSettings"));
 const AgentAnalytics = lazy(() => import("./pages/admin/AgentAnalytics"));
 const Checkout = lazy(() => import("./pages/Checkout"));
 const OrderSuccess = lazy(() => import("./pages/OrderSuccess"));
+const AppOnboarding = lazy(() => import("./pages/app/Onboarding"));
+const AppOverview = lazy(() => import("./pages/app/Overview"));
+const AppLeads = lazy(() => import("./pages/app/Leads"));
+const AppTraining = lazy(() => import("./pages/app/Training"));
+const AppIntegration = lazy(() => import("./pages/app/Integration"));
+const AppChannels = lazy(() => import("./pages/app/Channels"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
