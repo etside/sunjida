@@ -39,6 +39,7 @@ const AppIntegration = lazy(() => import("./pages/app/Integration"));
 const AppChannels = lazy(() => import("./pages/app/Channels"));
 const AppSocialConnections = lazy(() => import("./pages/app/SocialConnections"));
 const AppAiProviders = lazy(() => import("./pages/app/AiProviders"));
+const AppInventory = lazy(() => import("./pages/app/Inventory"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -73,6 +74,7 @@ function AnimatedRoutes() {
           <Route path="channels" element={<AppChannels />} />
           <Route path="connections" element={<AppSocialConnections />} />
           <Route path="ai-providers" element={<AppAiProviders />} />
+          <Route path="inventory" element={<AppInventory />} />
         </Route>
 
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
