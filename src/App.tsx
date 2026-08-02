@@ -29,6 +29,7 @@ const Auth = lazy(() => import("./pages/Auth"));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const Account = lazy(() => import("./pages/Account"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
+const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
 const AgentSettings = lazy(() => import("./pages/admin/AgentSettings"));
 const AgentAnalytics = lazy(() => import("./pages/admin/AgentAnalytics"));
 const AppOnboarding = lazy(() => import("./pages/app/Onboarding"));
@@ -60,6 +61,7 @@ function AnimatedRoutes() {
         <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/account" element={<PageTransition><Account /></PageTransition>} />
+        <Route path="/admin/login" element={<PageTransition><AdminLogin /></PageTransition>} />
         <Route path="/admin" element={<SuperPinGuard><AdminLayout /></SuperPinGuard>}>
           <Route index element={<AdminDashboard />} />
           <Route path="agent" element={<AgentSettings />} />

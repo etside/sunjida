@@ -69,7 +69,7 @@ export default function Auth() {
       toast.error(error.message);
     } else {
       toast.success('Welcome back!');
-      navigate('/admin');
+      navigate('/app');
     }
     setLoading(false);
   };
@@ -83,7 +83,7 @@ export default function Auth() {
       email: formData.email,
       password: formData.password,
       options: {
-        emailRedirectTo: `${window.location.origin}/admin`,
+        emailRedirectTo: `${window.location.origin}/app`,
         data: {
           full_name: formData.fullName,
         },
@@ -104,7 +104,7 @@ export default function Auth() {
 
   return (
     <>
-      <SEOHead title="Sign In" description="Sign in to access the admin panel" />
+      <SEOHead title="Tenant Login | SalesDaddy" description="Sign in to your SalesDaddy business dashboard" />
 
       <div className="min-h-screen flex items-center justify-center px-6 py-24">
         <motion.div
@@ -115,7 +115,7 @@ export default function Auth() {
         >
           <div className="text-center mb-8">
             <h1 className="text-3xl font-light tracking-wide mb-2">Welcome</h1>
-            <p className="text-muted-foreground">Sign in to access the admin panel</p>
+            <p className="text-muted-foreground">Sign in to your business dashboard</p>
           </div>
 
           <div className="bg-card rounded-lg border border-border p-6">
@@ -255,6 +255,12 @@ export default function Auth() {
               ))}
             </div>
           </div>
+
+          <p className="mt-6 text-center text-xs text-muted-foreground">
+            <a href="/admin/login" className="hover:text-foreground transition-colors">
+              Admin login &rarr;
+            </a>
+          </p>
         </motion.div>
       </div>
     </>

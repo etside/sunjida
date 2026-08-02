@@ -87,7 +87,10 @@ export function Header() {
             <LanguageToggle />
             <ThemeToggle />
             <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
-              <Link to="/auth">{t('nav.signin')}</Link>
+              <Link to="/auth">Sign In</Link>
+            </Button>
+            <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
+              <Link to="/admin/login">Admin</Link>
             </Button>
             <Button asChild size="sm" className="hidden sm:inline-flex rounded-full px-5">
               <Link to="/auth">{t('nav.start')}</Link>
@@ -134,7 +137,10 @@ export function Header() {
                     </nav>
                     <div className="p-4 border-t border-border space-y-2">
                       <Button asChild variant="outline" className="w-full rounded-full">
-                        <Link to="/auth" onClick={() => setOpen(false)}>{t('nav.signin')}</Link>
+                        <Link to="/auth" onClick={() => setOpen(false)}>Sign In</Link>
+                      </Button>
+                      <Button asChild variant="ghost" className="w-full rounded-full">
+                        <Link to="/admin/login" onClick={() => setOpen(false)}>Admin</Link>
                       </Button>
                       <Button asChild className="w-full rounded-full">
                         <Link to="/auth" onClick={() => setOpen(false)}>{t('nav.start')}</Link>
