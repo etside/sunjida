@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { z } from 'zod';
 import { motion } from 'framer-motion';
-import { Loader2, CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, Loader2 } from 'lucide-react';
 import {
   Form,
   FormControl,
@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -21,109 +22,68 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import { useLanguage } from '@/i18n/LanguageProvider';
+import { inquiryTypes } from '@/data/company';
 
-// Validation schema with security best practices
 const contactFormSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(2, { message: 'Name must be at least 2 characters' })
-    .max(100, { message: 'Name must be less than 100 characters' }),
-  email: z
-    .string()
-    .trim()
-    .email({ message: 'Please enter a valid email address' })
-    .max(255, { message: 'Email must be less than 255 characters' }),
-  projectType: z.enum(['editorial', 'commercial', 'personal'], {
-    required_error: 'Please select a project type',
-  }),
-  message: z
-    .string()
-    .trim()
-    .min(10, { message: 'Message must be at least 10 characters' })
-    .max(1000, { message: 'Message must be less than 1000 characters' }),
+  name: z.string().trim().min(2).max(80),
+  email: z.string().trim().email().max(160),
+  projectType: z.string().min(1),
+  message: z.string().trim().min(10).max(2000),
 });
 
 type ContactFormValues = z.infer<typeof contactFormSchema>;
 
-/**
- * Contact form component with validation and error handling
- * Uses react-hook-form + zod for type-safe validation
- */
 export function ContactForm() {
+  const { lang } = useLanguage();
+  const bn = lang === 'bn';
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
-    defaultValues: {
-      name: '',
-      email: '',
-      projectType: undefined,
-      message: '',
-    },
+    defaultValues: { name: '', email: '', projectType: '', message: '' },
   });
 
   const onSubmit = async (data: ContactFormValues) => {
     setIsSubmitting(true);
-    
     try {
-      // Formspree integration - replace YOUR_FORM_ID with your actual form ID
-      const response = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: data.name,
-          email: data.email,
-          projectType: data.projectType,
-          message: data.message,
-          _subject: `New ${data.projectType} inquiry from ${data.name}`,
-        }),
+      const { error } = await supabase.from('contact_submissions').insert({
+        name: data.name,
+        email: data.email,
+        project_type: data.projectType,
+        message: data.message,
       });
+      if (error) throw error;
 
-      if (!response.ok) {
-        throw new Error('Failed to send message');
-      }
-
-      // Show success state
       setIsSuccess(true);
       form.reset();
-
-      // Reset success message after 5 seconds
-      setTimeout(() => {
-        setIsSuccess(false);
-      }, 5000);
-    } catch (error) {
+      setTimeout(() => setIsSuccess(false), 6000);
+    } catch {
       form.setError('root', {
-        message: 'Failed to send message. Please try again.',
+        message: bn
+          ? 'বার্তা পাঠানো যায়নি। আবার চেষ্টা করুন।'
+          : 'Could not send your message. Please try again.',
       });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Show success message
   if (isSuccess) {
     return (
       <motion.div
-        className="bg-accent border border-border rounded-sm p-8 text-center space-y-4"
-        initial={{ opacity: 0, scale: 0.95 }}
+        className="rounded-xl border border-border bg-secondary/40 p-8 text-center space-y-4"
+        initial={{ opacity: 0, scale: 0.97 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
       >
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-        >
-          <CheckCircle2 className="size-16 mx-auto text-green-600 dark:text-green-400" />
-        </motion.div>
-        <h3 className="text-2xl font-light tracking-wide">Message Sent!</h3>
-        <p className="text-muted-foreground font-light leading-relaxed">
-          Thank you for reaching out. I'll get back to you as soon as possible.
+        <CheckCircle2 className="size-12 mx-auto text-primary" />
+        <h3 className="text-xl font-semibold">{bn ? 'বার্তা পাঠানো হয়েছে!' : 'Message sent!'}</h3>
+        <p className="text-sm text-muted-foreground">
+          {bn
+            ? 'ধন্যবাদ। আমাদের টিম শীঘ্রই আপনার সাথে যোগাযোগ করবে।'
+            : 'Thanks for reaching out — our team will get back to you shortly.'}
         </p>
       </motion.div>
     );
@@ -131,123 +91,96 @@ export function ContactForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        {/* Name Field */}
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-light tracking-wide">
-                Name
-              </FormLabel>
+              <FormLabel>{bn ? 'নাম' : 'Name'}</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="Your full name"
-                  className="font-light"
-                  {...field}
-                />
+                <Input placeholder={bn ? 'আপনার নাম' : 'Your full name'} {...field} />
               </FormControl>
-              <FormMessage className="text-xs font-light" />
+              <FormMessage className="text-xs" />
             </FormItem>
           )}
         />
 
-        {/* Email Field */}
         <FormField
           control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-light tracking-wide">
-                Email
-              </FormLabel>
+              <FormLabel>{bn ? 'ইমেইল' : 'Email'}</FormLabel>
               <FormControl>
-                <Input
-                  type="email"
-                  placeholder="your.email@example.com"
-                  className="font-light"
-                  {...field}
-                />
+                <Input type="email" placeholder="you@company.com" {...field} />
               </FormControl>
-              <FormMessage className="text-xs font-light" />
+              <FormMessage className="text-xs" />
             </FormItem>
           )}
         />
 
-        {/* Project Type Select */}
         <FormField
           control={form.control}
           name="projectType"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-light tracking-wide">
-                Project Type
-              </FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormLabel>{bn ? 'কী নিয়ে কথা বলতে চান?' : 'What do you need?'}</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
-                  <SelectTrigger className="font-light">
-                    <SelectValue placeholder="Select project type" />
+                  <SelectTrigger>
+                    <SelectValue placeholder={bn ? 'একটি বেছে নিন' : 'Select a topic'} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent className="bg-popover z-50">
-                  <SelectItem value="editorial" className="font-light">
-                    Editorial
-                  </SelectItem>
-                  <SelectItem value="commercial" className="font-light">
-                    Commercial
-                  </SelectItem>
-                  <SelectItem value="personal" className="font-light">
-                    Personal
-                  </SelectItem>
+                  {inquiryTypes.map((t) => (
+                    <SelectItem key={t.value} value={t.value}>
+                      {bn ? t.bn : t.en}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
-              <FormMessage className="text-xs font-light" />
+              <FormMessage className="text-xs" />
             </FormItem>
           )}
         />
 
-        {/* Message Textarea */}
         <FormField
           control={form.control}
           name="message"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-light tracking-wide">
-                Message
-              </FormLabel>
+              <FormLabel>{bn ? 'বার্তা' : 'Message'}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Tell me about your project..."
-                  className="min-h-32 font-light resize-none"
+                  placeholder={
+                    bn
+                      ? 'আপনার ব্যবসা ও চাহিদা সম্পর্কে লিখুন...'
+                      : 'Tell us about your business and what you want to automate...'
+                  }
+                  className="min-h-32 resize-none"
                   {...field}
                 />
               </FormControl>
-              <FormMessage className="text-xs font-light" />
+              <FormMessage className="text-xs" />
             </FormItem>
           )}
         />
 
-        {/* Root Error Message */}
         {form.formState.errors.root && (
-          <div className="text-sm text-destructive font-light">
-            {form.formState.errors.root.message}
-          </div>
+          <p className="text-sm text-destructive">{form.formState.errors.root.message}</p>
         )}
 
-        {/* Submit Button */}
-        <Button
-          type="submit"
-          className="w-full py-6 text-base font-light tracking-wide"
-          disabled={isSubmitting}
-        >
+        <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
           {isSubmitting ? (
             <>
-              <Loader2 className="mr-2 size-5 animate-spin" />
-              Sending...
+              <Loader2 className="mr-2 size-4 animate-spin" />
+              {bn ? 'পাঠানো হচ্ছে...' : 'Sending...'}
             </>
+          ) : bn ? (
+            'বার্তা পাঠান'
           ) : (
-            'Send Message'
+            'Send message'
           )}
         </Button>
       </form>
