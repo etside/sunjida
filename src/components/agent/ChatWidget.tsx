@@ -28,12 +28,13 @@ export function ChatWidget() {
         ? 'হ্যালো! আমি SalesDaddy সহকারী। কীভাবে সাহায্য করতে পারি?'
         : 'Hi! I am the SalesDaddy assistant. How can I help you today?';
 
-    supabase
-      .from('agent_settings')
-      .select('greeting_en, greeting_bn, is_enabled')
-      .limit(1)
-      .maybeSingle()
-      .then(({ data }) => {
+    void (async () => {
+      try {
+        const { data } = await supabase
+          .from('agent_settings')
+          .select('greeting_en, greeting_bn, is_enabled')
+          .limit(1)
+          .maybeSingle();
         if (!data) {
           setEnabled(true);
           setGreeting(fallback);
@@ -41,11 +42,11 @@ export function ChatWidget() {
         }
         setEnabled(data.is_enabled);
         setGreeting((lang === 'bn' ? data.greeting_bn : data.greeting_en) || fallback);
-      })
-      .catch(() => {
+      } catch {
         setEnabled(true);
         setGreeting(fallback);
-      });
+      }
+    })();
   }, [lang]);
 
   useEffect(() => {
