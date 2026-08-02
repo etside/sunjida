@@ -25,23 +25,20 @@ describe("ErrorBoundary", () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
     const user = userEvent.setup();
 
-    function Harness() {
-      return (
-        <ErrorBoundary>
-          <Boom explode={shouldExplode} />
-        </ErrorBoundary>
-      );
-    }
-    let shouldExplode = true;
+    let explode = true;
+    const Harness = () => (
+      <ErrorBoundary>
+        <Boom explode={explode} />
+      </ErrorBoundary>
+    );
 
-    const { rerender } = render(<Harness />);
+    render(<Harness />);
     expect(screen.getByText(/Something went wrong/i)).toBeInTheDocument();
 
-    shouldExplode = false;
+    explode = false;
     await user.click(screen.getByRole("button", { name: /try again/i }));
-    rerender(<Harness />);
 
-    expect(screen.getByText("All good")).toBeInTheDocument();
+    expect(await screen.findByText("All good")).toBeInTheDocument();
   });
 
   it("shows a compact fallback in inline mode", () => {
