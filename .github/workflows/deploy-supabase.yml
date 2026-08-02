@@ -47,3 +47,4 @@ jobs:
           supabase secrets set GOOGLE_SERVICE_ACCOUNT_JSON=${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
           supabase secrets set VOICE_AGENT_MODEL=${{ secrets.VOICE_AGENT_MODEL }} || true
           supabase secrets set VOICE_AGENT_MAX_TOKENS=${{ secrets.VOICE_AGENT_MAX_TOKENS }} || true
+          supabase secrets set LOVABLE_API_KEY=${{ secrets.LOVABLE_API_KEY }} || true
