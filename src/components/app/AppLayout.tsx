@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, BookOpen, Plug, Share2, Loader2 } from 'lucide-react';
+import { LayoutDashboard, Users, BookOpen, Plug, Share2, Bot, Link2, Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useBusiness } from '@/hooks/useBusiness';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,8 @@ const NAV = [
   { to: '/app/training', label: 'Training', icon: BookOpen },
   { to: '/app/integration', label: 'Website API', icon: Plug },
   { to: '/app/channels', label: 'Social Channels', icon: Share2 },
+  { to: '/app/connections', label: 'Social Connections', icon: Link2 },
+  { to: '/app/ai-providers', label: 'AI Providers', icon: Bot },
 ];
 
 export function AppLayout() {

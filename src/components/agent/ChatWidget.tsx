@@ -33,6 +33,7 @@ export function ChatWidget() {
         const { data } = await supabase
           .from('agent_settings')
           .select('greeting_en, greeting_bn, is_enabled')
+          .is('business_id', null)
           .limit(1)
           .maybeSingle();
         if (!data) {
