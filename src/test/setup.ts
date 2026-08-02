@@ -24,8 +24,7 @@ class ResizeObserverStub {
   unobserve() {}
   disconnect() {}
 }
-// @ts-expect-error test stub
-window.ResizeObserver = window.ResizeObserver || ResizeObserverStub;
+(window as unknown as Record<string, unknown>).ResizeObserver ||= ResizeObserverStub;
 
 class IntersectionObserverStub {
   observe() {}
@@ -35,5 +34,4 @@ class IntersectionObserverStub {
     return [];
   }
 }
-// @ts-expect-error test stub
-window.IntersectionObserver = window.IntersectionObserver || IntersectionObserverStub;
+(window as unknown as Record<string, unknown>).IntersectionObserver ||= IntersectionObserverStub;
