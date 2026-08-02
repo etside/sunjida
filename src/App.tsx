@@ -5,14 +5,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { LanguageProvider } from "@/i18n/LanguageProvider";
-import { TenantProvider } from "@/contexts/TenantContext";
+
 import { Layout } from "@/components/layout/Layout";
 import { SkipToContent } from "@/components/ui/SkipToContent";
 import { LoadingFallback } from "@/components/ui/LoadingFallback";
 import { PageTransition } from "@/components/ui/PageTransition";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AdminLayout } from "@/components/admin/AdminLayout";
-import { FeatureGateProvider } from "@/contexts/FeatureGateContext";
 import { ChatWidget } from "@/components/chat/ChatWidget";
 import { AnimatePresence } from "framer-motion";
 import { lazy, Suspense } from "react";
@@ -32,8 +31,6 @@ const Account = lazy(() => import("./pages/Account"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
 const AgentSettings = lazy(() => import("./pages/admin/AgentSettings"));
 const AgentAnalytics = lazy(() => import("./pages/admin/AgentAnalytics"));
-const SuperAdminPanel = lazy(() => import("./components/admin/SuperAdminPanel"));
-const ClientPanel = lazy(() => import("./pages/tenant/ClientPanel"));
 const Checkout = lazy(() => import("./pages/Checkout"));
 const OrderSuccess = lazy(() => import("./pages/OrderSuccess"));
 const AppOnboarding = lazy(() => import("./pages/app/Onboarding"));
@@ -69,8 +66,6 @@ function AnimatedRoutes() {
           <Route path="agent" element={<AgentSettings />} />
           <Route path="analytics" element={<AgentAnalytics />} />
         </Route>
-        <Route path="/super-admin" element={<PageTransition><SuperAdminPanel /></PageTransition>} />
-        <Route path="/tenant/client-panel" element={<PageTransition><ClientPanel /></PageTransition>} />
         <Route path="/app/onboarding" element={<AppOnboarding />} />
         <Route path="/app" element={<AppLayout />}>
           <Route index element={<AppOverview />} />
@@ -91,8 +86,6 @@ const App = () => (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <LanguageProvider>
-          <TenantProvider>
-            <FeatureGateProvider>
               <TooltipProvider>
               <Toaster />
               <Sonner />
@@ -106,8 +99,6 @@ const App = () => (
                 <ChatWidget />
               </BrowserRouter>
             </TooltipProvider>
-            </FeatureGateProvider>
-          </TenantProvider>
         </LanguageProvider>
       </ThemeProvider>
     </QueryClientProvider>
