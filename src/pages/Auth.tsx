@@ -11,6 +11,12 @@ import { SEOHead } from '@/components/seo/SEOHead';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+const socialProviders = [
+  { name: 'Google', provider: 'google' as const, icon: 'G' },
+  { name: 'Facebook', provider: 'facebook' as const, icon: 'f' },
+  { name: 'GitHub', provider: 'github' as const, icon: 'GH' },
+];
+
 const authSchema = z.object({
   email: z.string().email('Please enter a valid email'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
@@ -39,6 +45,14 @@ export default function Auth() {
       }
       return false;
     }
+  };
+
+  const handleSocialLogin = async (provider: 'google' | 'facebook' | 'github') => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    });
+    if (error) toast.error(error.message);
   };
 
   const handleSignIn = async (e: React.FormEvent) => {
@@ -218,6 +232,28 @@ export default function Auth() {
                 </form>
               </TabsContent>
             </Tabs>
+
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-3">
+              {socialProviders.map((sp) => (
+                <Button
+                  key={sp.provider}
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => handleSocialLogin(sp.provider)}
+                >
+                  {sp.icon}
+                </Button>
+              ))}
+            </div>
           </div>
         </motion.div>
       </div>

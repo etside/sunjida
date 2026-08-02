@@ -1,25 +1,20 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Package, ShoppingCart, Image, Mail, LogOut, FolderOpen } from 'lucide-react';
+import { Users, BarChart3, Settings, Mail, LogOut } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useSuperPin } from '@/hooks/useSuperPin';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ProductsTable } from '@/components/admin/ProductsTable';
-import { OrdersTable } from '@/components/admin/OrdersTable';
-import { PortfolioTable } from '@/components/admin/PortfolioTable';
-import { MessagesTable } from '@/components/admin/MessagesTable';
-import { CategoriesTable } from '@/components/admin/CategoriesTable';
 
 export default function AdminDashboard() {
   const { user, signOut } = useAuth();
+  const { logout: pinLogout } = useSuperPin();
   const [stats, setStats] = useState({
-    products: 0,
-    orders: 0,
-    portfolioProjects: 0,
-    contactSubmissions: 0,
+    tenants: 0,
+    users: 0,
+    messages: 0,
   });
 
   useEffect(() => {
@@ -27,31 +22,33 @@ export default function AdminDashboard() {
   }, []);
 
   const fetchStats = async () => {
-    const [products, orders, portfolio, contacts] = await Promise.all([
-      supabase.from('sharee_products').select('id', { count: 'exact', head: true }),
-      supabase.from('orders').select('id', { count: 'exact', head: true }),
-      supabase.from('portfolio_projects').select('id', { count: 'exact', head: true }),
+    const [tenants, users, messages] = await Promise.all([
+      supabase.from('tenants' as any).select('id', { count: 'exact', head: true }),
+      supabase.from('tenant_users' as any).select('id', { count: 'exact', head: true }),
       supabase.from('contact_submissions').select('id', { count: 'exact', head: true }).eq('is_read', false),
     ]);
 
     setStats({
-      products: products.count || 0,
-      orders: orders.count || 0,
-      portfolioProjects: portfolio.count || 0,
-      contactSubmissions: contacts.count || 0,
+      tenants: tenants.count || 0,
+      users: users.count || 0,
+      messages: messages.count || 0,
     });
   };
 
+  const handleSignOut = () => {
+    pinLogout();
+    signOut();
+  };
+
   const statCards = [
-    { title: 'Products', value: stats.products, icon: Package, color: 'text-blue-500' },
-    { title: 'Orders', value: stats.orders, icon: ShoppingCart, color: 'text-green-500' },
-    { title: 'Portfolio', value: stats.portfolioProjects, icon: Image, color: 'text-purple-500' },
-    { title: 'New Messages', value: stats.contactSubmissions, icon: Mail, color: 'text-orange-500' },
+    { title: 'Tenants', value: stats.tenants, icon: Users, color: 'text-blue-500' },
+    { title: 'Users', value: stats.users, icon: BarChart3, color: 'text-green-500' },
+    { title: 'New Messages', value: stats.messages, icon: Mail, color: 'text-orange-500' },
   ];
 
   return (
     <>
-      <SEOHead title="Admin Dashboard" description="Manage your portfolio and Sharee shop" />
+      <SEOHead title="Admin Dashboard" description="SalesDaddy admin control panel" />
 
       <div className="min-h-screen bg-secondary/20">
         <header className="bg-background border-b border-border sticky top-0 z-40">
@@ -59,7 +56,7 @@ export default function AdminDashboard() {
             <h1 className="text-2xl font-light tracking-wide">Admin Dashboard</h1>
             <div className="flex items-center gap-4">
               <span className="text-sm text-muted-foreground hidden sm:block">{user?.email}</span>
-              <Button variant="ghost" size="sm" onClick={signOut}>
+              <Button variant="ghost" size="sm" onClick={handleSignOut}>
                 <LogOut className="w-4 h-4 mr-2" />
                 Sign Out
               </Button>
@@ -69,7 +66,7 @@ export default function AdminDashboard() {
 
         <main className="max-w-7xl mx-auto px-6 py-8">
           <motion.div
-            className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
+            className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
@@ -86,85 +83,19 @@ export default function AdminDashboard() {
             ))}
           </motion.div>
 
-          <Tabs defaultValue="products" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-5 max-w-3xl">
-              <TabsTrigger value="products">Products</TabsTrigger>
-              <TabsTrigger value="categories">Categories</TabsTrigger>
-              <TabsTrigger value="orders">Orders</TabsTrigger>
-              <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
-              <TabsTrigger value="messages">Messages</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="products">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Package className="w-5 h-5" />
-                    Sharee Products
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ProductsTable />
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="categories">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <FolderOpen className="w-5 h-5" />
-                    Product Categories
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CategoriesTable />
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="orders">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <ShoppingCart className="w-5 h-5" />
-                    Orders
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <OrdersTable />
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="portfolio">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Image className="w-5 h-5" />
-                    Portfolio Projects
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <PortfolioTable />
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="messages">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Mail className="w-5 h-5" />
-                    Contact Messages
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <MessagesTable />
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="w-5 h-5" />
+                Quick Actions
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground text-sm">
+                Welcome to the SalesDaddy admin panel. Manage tenants, users, and platform settings from here.
+              </p>
+            </CardContent>
+          </Card>
         </main>
       </div>
     </>

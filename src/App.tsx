@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { LanguageProvider } from "@/i18n/LanguageProvider";
+import { SuperPinProvider } from "@/hooks/useSuperPin";
 
 import { Layout } from "@/components/layout/Layout";
 import { SkipToContent } from "@/components/ui/SkipToContent";
@@ -12,6 +13,7 @@ import { LoadingFallback } from "@/components/ui/LoadingFallback";
 import { PageTransition } from "@/components/ui/PageTransition";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AdminLayout } from "@/components/admin/AdminLayout";
+import { SuperPinGuard } from "@/components/admin/SuperPinGuard";
 import { AnimatePresence } from "framer-motion";
 import { lazy, Suspense } from "react";
 
@@ -23,15 +25,12 @@ const Pricing = lazy(() => import("./pages/Pricing"));
 const Docs = lazy(() => import("./pages/Docs"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
-const Shop = lazy(() => import("./pages/Shop"));
-const ProductDetailPage = lazy(() => import("./pages/ProductDetail"));
 const Auth = lazy(() => import("./pages/Auth"));
+const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const Account = lazy(() => import("./pages/Account"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
 const AgentSettings = lazy(() => import("./pages/admin/AgentSettings"));
 const AgentAnalytics = lazy(() => import("./pages/admin/AgentAnalytics"));
-const Checkout = lazy(() => import("./pages/Checkout"));
-const OrderSuccess = lazy(() => import("./pages/OrderSuccess"));
 const AppOnboarding = lazy(() => import("./pages/app/Onboarding"));
 const AppOverview = lazy(() => import("./pages/app/Overview"));
 const AppLeads = lazy(() => import("./pages/app/Leads"));
@@ -55,13 +54,10 @@ function AnimatedRoutes() {
         <Route path="/docs" element={<PageTransition><Docs /></PageTransition>} />
         <Route path="/about" element={<PageTransition><About /></PageTransition>} />
         <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
-        <Route path="/shop" element={<PageTransition><Shop /></PageTransition>} />
-        <Route path="/product/:slug" element={<PageTransition><ProductDetailPage /></PageTransition>} />
         <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/account" element={<PageTransition><Account /></PageTransition>} />
-        <Route path="/checkout" element={<PageTransition><Checkout /></PageTransition>} />
-        <Route path="/order-success" element={<PageTransition><OrderSuccess /></PageTransition>} />
-        <Route path="/admin" element={<AdminLayout />}>
+        <Route path="/admin" element={<SuperPinGuard><AdminLayout /></SuperPinGuard>}>
           <Route index element={<AdminDashboard />} />
           <Route path="agent" element={<AgentSettings />} />
           <Route path="analytics" element={<AgentAnalytics />} />
@@ -87,7 +83,8 @@ const App = () => (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <LanguageProvider>
-              <TooltipProvider>
+          <SuperPinProvider>
+            <TooltipProvider>
               <Toaster />
               <Sonner />
               <BrowserRouter>
@@ -99,6 +96,7 @@ const App = () => (
                 </Layout>
               </BrowserRouter>
             </TooltipProvider>
+          </SuperPinProvider>
         </LanguageProvider>
       </ThemeProvider>
     </QueryClientProvider>
