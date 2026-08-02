@@ -1,249 +1,129 @@
-import { motion } from 'framer-motion';
-import { Instagram, Facebook, Star, Clock, MapPin, Award, Sparkles } from 'lucide-react';
-import { designerInfo } from '@/data/designer';
-import { Separator } from '@/components/ui/separator';
-import { SEOHead } from '@/components/seo/SEOHead';
-import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { Link } from 'react-router-dom';
+import { Bot, Globe2, ShieldCheck, Store, Workflow, Headphones } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { SEOHead } from '@/components/seo/SEOHead';
+import { useLanguage } from '@/i18n/LanguageProvider';
 
-/**
- * About page with professional bio, skills, and stats
- * Elegant rose gold theme with responsive design
- */
 export default function About() {
+  const { lang } = useLanguage();
+  const bn = lang === 'bn';
+
+  const copy = {
+    title: bn ? 'SalesDaddy সম্পর্কে' : 'About SalesDaddy',
+    subtitle: bn
+      ? 'বাংলাদেশি ব্যবসার জন্য দ্বিভাষিক এআই সেলস এজেন্ট — মেসেঞ্জার, হোয়াটসঅ্যাপ, ইনস্টাগ্রাম ও আপনার ওয়েবসাইটে।'
+      : 'Bilingual AI sales agents for commerce teams — on Messenger, WhatsApp, Instagram and your own website.',
+    missionTitle: bn ? 'আমাদের লক্ষ্য' : 'Our mission',
+    mission: bn
+      ? 'প্রতিটি ব্যবসা যেন ২৪/৭ বাংলা ও ইংরেজিতে গ্রাহকের প্রশ্নের উত্তর দিতে পারে, লিড ধরে রাখতে পারে এবং কথোপকথন থেকেই অর্ডার নিতে পারে — কোনো ডেভেলপার ছাড়াই।'
+      : 'Let every business answer customers 24/7 in Bangla and English, capture the lead, and close the order right inside the conversation — with no developer work.',
+    valuesTitle: bn ? 'যেভাবে কাজ করে' : 'What we build',
+    ctaTitle: bn ? 'আজই আপনার এজেন্ট চালু করুন' : 'Launch your agent today',
+    ctaBody: bn
+      ? 'একটি ওয়ার্কস্পেস তৈরি করুন, চ্যানেল যুক্ত করুন এবং কয়েক মিনিটেই লাইভ যান।'
+      : 'Create a workspace, connect your channels, and go live in minutes.',
+    getStarted: bn ? 'শুরু করুন' : 'Get started',
+    pricing: bn ? 'প্রাইসিং দেখুন' : 'See pricing',
+  };
+
+  const values = [
+    {
+      icon: Globe2,
+      title: bn ? 'সত্যিকারের দ্বিভাষিক' : 'Truly bilingual',
+      body: bn
+        ? 'বাংলা, ইংরেজি ও বাংলিশ — গ্রাহক যেভাবে লেখেন, এজেন্ট সেভাবেই উত্তর দেয়।'
+        : 'Bangla, English and Banglish — the agent replies the way your customer writes.',
+    },
+    {
+      icon: Bot,
+      title: bn ? 'ভয়েস ও চ্যাট এজেন্ট' : 'Voice and chat agents',
+      body: bn
+        ? 'একই ব্রেইন, একই প্রশিক্ষণ ডেটা — চ্যাট ও কলের জন্য।'
+        : 'One brain and one training set powering both chat threads and phone calls.',
+    },
+    {
+      icon: Store,
+      title: bn ? 'স্টক ও অর্ডার' : 'Stock and orders',
+      body: bn
+        ? 'আপনার ক্যাটালগ সিঙ্ক হয়, স্টক দেখে উত্তর দেয় এবং অর্ডার সরাসরি আপনার সাইটে পাঠায়।'
+        : 'Your catalog syncs in, answers respect live stock, and orders push straight to your site.',
+    },
+    {
+      icon: Workflow,
+      title: bn ? 'প্লাগ-অ্যান্ড-প্লে API' : 'Plug-and-play API',
+      body: bn
+        ? 'প্রতিটি ব্যবসার নিজস্ব API কী ও ওয়েবহুক — কোড লেখা ছাড়াই ইন্টিগ্রেশন।'
+        : 'Every workspace gets its own API key and webhooks — integrate without writing a backend.',
+    },
+    {
+      icon: ShieldCheck,
+      title: bn ? 'নিরাপদ ও আলাদা ডেটা' : 'Isolated, secure data',
+      body: bn
+        ? 'প্রতিটি ওয়ার্কস্পেসের ডেটা রো-লেভেল সিকিউরিটি দিয়ে আলাদা রাখা হয়।'
+        : 'Every workspace is isolated with row-level security and scoped credentials.',
+    },
+    {
+      icon: Headphones,
+      title: bn ? 'লিড থেকে বিক্রি' : 'Leads to revenue',
+      body: bn
+        ? 'প্রতিটি কথোপকথন স্বয়ংক্রিয়ভাবে শ্রেণিবদ্ধ হয় এবং সেলস বোর্ডে যায়।'
+        : 'Every conversation is auto-classified and routed onto your sales board.',
+    },
+  ];
+
   return (
     <>
-      <SEOHead
-        title="About"
-        description={`Learn about ${designerInfo.name}, ${designerInfo.tagline}. Professional graphic designer and Sharee entrepreneur from Bangladesh.`}
-        image={designerInfo.portraitImage}
-      />
-      
-      <div className="min-h-screen">
-        {/* Hero Section */}
-        <section className="pt-24 md:pt-32 pb-12 md:pb-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-secondary/50 to-background">
-          <div className="max-w-4xl mx-auto text-center space-y-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <span className="text-sm font-medium text-primary uppercase tracking-wider">
-                Get to Know Me
-              </span>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-tight mt-4">
-                About <span className="text-gradient font-medium">Me</span>
-              </h1>
-              <p className="text-lg md:text-xl text-muted-foreground font-light mt-4 max-w-2xl mx-auto">
-                {designerInfo.tagline}
-              </p>
-            </motion.div>
+      <SEOHead title={copy.title} description={copy.subtitle} />
+      <section className="relative overflow-hidden pt-28 pb-16 md:pt-36">
+        <div className="pointer-events-none absolute inset-0 grid-bg" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl">
+            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight">{copy.title}</h1>
+            <p className="mt-4 text-lg text-muted-foreground">{copy.subtitle}</p>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Portrait and Biography */}
-        <section className="py-12 md:py-20 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-start">
-              {/* Portrait Images */}
-              <motion.div
-                className="space-y-6"
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-              >
-                <div className="relative">
-                  <div className="absolute -inset-4 bg-gradient-to-br from-primary/20 via-rose/10 to-gold/20 rounded-3xl blur-xl" />
-                  <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl">
-                    <img
-                      src={designerInfo.portraitImage}
-                      alt={designerInfo.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
-                
-                {/* Social Links */}
-                <div className="flex items-center justify-center gap-3">
-                  {designerInfo.socialLinks.fiverr && (
-                    <a
-                      href={designerInfo.socialLinks.fiverr}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-12 h-12 rounded-xl bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-[#1DBF73] hover:border-[#1DBF73] transition-colors"
-                      aria-label="Fiverr"
-                    >
-                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M23.004 15.588a.995.995 0 1 0 .002-1.99.995.995 0 0 0-.002 1.99zm-.996-3.705h-.85c-.546 0-.84.41-.84 1.092v2.466h-1.61v-3.558h-.684c-.547 0-.84.41-.84 1.092v2.466h-1.61v-4.874h1.61v.74c.264-.574.626-.74 1.163-.74h1.972v.74c.264-.574.625-.74 1.162-.74h.527v1.316z"/>
-                      </svg>
-                    </a>
-                  )}
-                  {designerInfo.socialLinks.instagram && (
-                    <a
-                      href={designerInfo.socialLinks.instagram}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-12 h-12 rounded-xl bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
-                      aria-label="Instagram"
-                    >
-                      <Instagram className="w-5 h-5" />
-                    </a>
-                  )}
-                  {designerInfo.socialLinks.facebook && (
-                    <a
-                      href={designerInfo.socialLinks.facebook}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-12 h-12 rounded-xl bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
-                      aria-label="Facebook"
-                    >
-                      <Facebook className="w-5 h-5" />
-                    </a>
-                  )}
-                </div>
-              </motion.div>
+      <section className="pb-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="rounded-3xl border border-border bg-card/60 p-8 md:p-12">
+            <h2 className="text-2xl font-semibold tracking-tight">{copy.missionTitle}</h2>
+            <p className="mt-4 max-w-3xl text-muted-foreground">{copy.mission}</p>
+          </div>
+        </div>
+      </section>
 
-              {/* Biography and Info */}
-              <motion.div
-                className="space-y-6 md:space-y-8"
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-              >
-                {/* Name and Rating */}
-                <div className="space-y-3">
-                  <div className="flex flex-wrap items-center gap-3">
-                    <h2 className="text-3xl sm:text-4xl font-light tracking-tight">
-                      {designerInfo.name}
-                    </h2>
-                    <span className="flex items-center gap-1 px-3 py-1 rounded-full bg-gold/20 text-gold text-sm font-medium">
-                      <Star className="w-3 h-3 fill-current" />
-                      {designerInfo.rating}
-                    </span>
-                  </div>
-                  <p className="text-lg text-muted-foreground font-light">
-                    {designerInfo.tagline}
-                  </p>
-                </div>
+      <section className="pb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl font-semibold tracking-tight">{copy.valuesTitle}</h2>
+          <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {values.map((v) => (
+              <div key={v.title} className="rounded-2xl border border-border bg-card/60 p-6">
+                <v.icon className="h-6 w-6 text-primary" aria-hidden="true" />
+                <h3 className="mt-4 font-medium">{v.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{v.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-                <Separator />
-
-                {/* Quick Info Cards */}
-                <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                  <div className="flex items-center gap-3 p-4 rounded-xl bg-secondary/50">
-                    <MapPin className="w-5 h-5 text-primary flex-shrink-0" />
-                    <div>
-                      <p className="text-xs text-muted-foreground">Location</p>
-                      <p className="font-medium text-sm">{designerInfo.location}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 p-4 rounded-xl bg-secondary/50">
-                    <Clock className="w-5 h-5 text-primary flex-shrink-0" />
-                    <div>
-                      <p className="text-xs text-muted-foreground">Response</p>
-                      <p className="font-medium text-sm">{designerInfo.responseTime}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Biography */}
-                <div className="space-y-4">
-                  {designerInfo.biography.split('\n\n').map((paragraph, index) => (
-                    <p
-                      key={index}
-                      className="text-muted-foreground font-light leading-relaxed"
-                    >
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
-
-                {/* Skills */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-primary" />
-                    Skills & Expertise
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {designerInfo.skills.map((skill, index) => (
-                      <span
-                        key={index}
-                        className="px-4 py-2 rounded-full bg-secondary text-secondary-foreground text-sm font-light"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
+      <section className="pb-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="rounded-3xl border border-primary/40 bg-card p-8 md:p-12 text-center">
+            <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">{copy.ctaTitle}</h2>
+            <p className="mt-3 text-muted-foreground">{copy.ctaBody}</p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <Button asChild size="lg">
+                <Link to="/app/onboarding">{copy.getStarted}</Link>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <Link to="/pricing">{copy.pricing}</Link>
+              </Button>
             </div>
           </div>
-        </section>
-
-        {/* Stats Section */}
-        <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-secondary via-accent/30 to-secondary">
-          <div className="max-w-6xl mx-auto">
-            <ScrollReveal>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 text-center">
-                <div className="p-6 rounded-2xl bg-card/50 backdrop-blur-sm">
-                  <p className="text-3xl sm:text-4xl md:text-5xl font-light text-primary">
-                    {designerInfo.stats.happyClients}+
-                  </p>
-                  <p className="text-muted-foreground font-light mt-2 text-sm">Happy Clients</p>
-                </div>
-                <div className="p-6 rounded-2xl bg-card/50 backdrop-blur-sm">
-                  <p className="text-3xl sm:text-4xl md:text-5xl font-light text-primary">
-                    {designerInfo.stats.projectsCompleted}+
-                  </p>
-                  <p className="text-muted-foreground font-light mt-2 text-sm">Projects Done</p>
-                </div>
-                <div className="p-6 rounded-2xl bg-card/50 backdrop-blur-sm">
-                  <p className="text-3xl sm:text-4xl md:text-5xl font-light text-primary">
-                    {designerInfo.stats.yearsExperience}+
-                  </p>
-                  <p className="text-muted-foreground font-light mt-2 text-sm">Years Experience</p>
-                </div>
-                <div className="p-6 rounded-2xl bg-card/50 backdrop-blur-sm">
-                  <div className="flex items-center justify-center gap-2">
-                    <Star className="w-6 h-6 sm:w-8 sm:h-8 fill-gold text-gold" />
-                    <p className="text-3xl sm:text-4xl md:text-5xl font-light text-primary">
-                      {designerInfo.rating}
-                    </p>
-                  </div>
-                  <p className="text-muted-foreground font-light mt-2 text-sm">Fiverr Rating</p>
-                </div>
-              </div>
-            </ScrollReveal>
-          </div>
-        </section>
-
-        {/* Approach Section */}
-        <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto">
-            <ScrollReveal>
-              <div className="text-center space-y-8">
-                <Award className="w-12 h-12 text-primary mx-auto" />
-                <h2 className="text-3xl sm:text-4xl font-light tracking-tight">
-                  My <span className="text-gradient font-medium">Approach</span>
-                </h2>
-                <div className="space-y-4 text-lg font-light leading-relaxed text-muted-foreground">
-                  {designerInfo.approach.split('\n\n').map((paragraph, index) => (
-                    <p key={index}>{paragraph}</p>
-                  ))}
-                </div>
-                <Link
-                  to="/contact"
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-all hover-lift font-medium"
-                >
-                  Let's Work Together
-                </Link>
-              </div>
-            </ScrollReveal>
-          </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </>
   );
 }
