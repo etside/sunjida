@@ -1,180 +1,147 @@
 import { motion } from 'framer-motion';
-import { Mail, MapPin, Clock, ExternalLink, MessageCircle } from 'lucide-react';
-import { designerInfo } from '@/data/designer';
+import { Mail, MapPin, Clock, MessageCircle, Phone, LifeBuoy } from 'lucide-react';
 import { ContactForm } from '@/components/forms/ContactForm';
 import { Separator } from '@/components/ui/separator';
 import { SEOHead } from '@/components/seo/SEOHead';
+import { useLanguage } from '@/i18n/LanguageProvider';
+import { company } from '@/data/company';
 
-/**
- * Contact page with elegant form and contact information
- * Fully responsive design with rose gold theme
- */
 export default function Contact() {
+  const { lang } = useLanguage();
+  const bn = lang === 'bn';
+
+  const title = bn ? 'যোগাযোগ করুন' : 'Contact SalesDaddy';
+  const description = bn
+    ? 'SalesDaddy টিমের সাথে কথা বলুন — চ্যাট এজেন্ট, ভয়েস এজেন্ট, ইনভেন্টরি সিঙ্ক ও ইন্টিগ্রেশন নিয়ে।'
+    : 'Talk to the SalesDaddy team about chat agents, voice agents, inventory sync and integrations.';
+
+  const rows = [
+    {
+      icon: Mail,
+      label: bn ? 'সেলস' : 'Sales',
+      value: company.sales,
+      href: `mailto:${company.sales}`,
+    },
+    {
+      icon: LifeBuoy,
+      label: bn ? 'সাপোর্ট' : 'Support',
+      value: company.support,
+      href: `mailto:${company.support}`,
+    },
+    {
+      icon: Phone,
+      label: bn ? 'ফোন / হোয়াটসঅ্যাপ' : 'Phone / WhatsApp',
+      value: company.phone,
+      href: company.whatsapp,
+    },
+    {
+      icon: Clock,
+      label: bn ? 'সময়' : 'Hours',
+      value: bn ? company.hours.bn : company.hours.en,
+    },
+    {
+      icon: MapPin,
+      label: bn ? 'অবস্থান' : 'Location',
+      value: bn ? company.location.bn : company.location.en,
+    },
+  ];
+
   return (
     <>
-      <SEOHead
-        title="Contact"
-        description={`Get in touch with ${designerInfo.name} for design inquiries, collaborations, and project bookings. ${designerInfo.availability}`}
-      />
-      
+      <SEOHead title={title} description={description} />
+
       <div className="min-h-screen">
-        {/* Hero Section */}
-        <section className="pt-24 md:pt-32 pb-12 md:pb-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-secondary/50 to-background">
-          <div className="max-w-4xl mx-auto text-center space-y-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
+        <section className="pt-28 md:pt-36 pb-10 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto text-center space-y-4">
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
               <span className="text-sm font-medium text-primary uppercase tracking-wider">
-                Let's Connect
+                {bn ? 'যোগাযোগ' : "Let's talk"}
               </span>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-tight mt-4">
-                Get in <span className="text-gradient font-medium">Touch</span>
-              </h1>
-              <p className="text-lg md:text-xl text-muted-foreground font-light mt-4 max-w-2xl mx-auto">
-                Ready to start a project or just want to say hello? I'd love to hear from you.
-              </p>
+              <h1 className="mt-3 text-4xl md:text-5xl font-semibold tracking-tight">{title}</h1>
+              <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">{description}</p>
             </motion.div>
           </div>
         </section>
 
-        {/* Main Content */}
-        <section className="py-12 md:py-20 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-8 lg:gap-16">
-              {/* Contact Form */}
-              <motion.div
-                className="space-y-6 order-2 md:order-1"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
-              >
-                <div className="space-y-3">
-                  <h2 className="text-2xl sm:text-3xl font-light tracking-tight flex items-center gap-3">
-                    <MessageCircle className="w-7 h-7 text-primary" />
-                    Send a Message
-                  </h2>
-                  <p className="text-muted-foreground font-light">
-                    Fill out the form below and I'll get back to you within {designerInfo.responseTime}.
-                  </p>
-                </div>
+        <section className="py-10 md:py-16 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto grid gap-8 lg:gap-14 md:grid-cols-2">
+            <motion.div
+              className="space-y-5 order-2 md:order-1"
+              initial={{ opacity: 0, x: -16 }}
+              animate={{ opacity: 1, x: 0 }}
+            >
+              <div className="space-y-2">
+                <h2 className="text-2xl font-semibold tracking-tight flex items-center gap-3">
+                  <MessageCircle className="w-6 h-6 text-primary" aria-hidden="true" />
+                  {bn ? 'বার্তা পাঠান' : 'Send a message'}
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  {bn
+                    ? `আমরা ${company.responseTime.bn} উত্তর দিই।`
+                    : `We reply ${company.responseTime.en}.`}
+                </p>
+              </div>
+              <div className="p-6 sm:p-8 bg-card rounded-2xl border border-border">
+                <ContactForm />
+              </div>
+            </motion.div>
 
-                <div className="p-6 sm:p-8 bg-card rounded-2xl border border-border">
-                  <ContactForm />
-                </div>
-              </motion.div>
+            <motion.div
+              className="space-y-6 order-1 md:order-2"
+              initial={{ opacity: 0, x: 16 }}
+              animate={{ opacity: 1, x: 0 }}
+            >
+              <div className="space-y-2">
+                <h2 className="text-2xl font-semibold tracking-tight">
+                  {bn ? 'সরাসরি যোগাযোগ' : 'Reach us directly'}
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  {bn
+                    ? 'যেকোনো চ্যানেলে লিখুন — আমাদের নিজস্ব এজেন্টই প্রথমে উত্তর দেবে।'
+                    : 'Message us on any channel — our own agent answers first, 24/7.'}
+                </p>
+              </div>
 
-              {/* Contact Information */}
-              <motion.div
-                className="space-y-8 order-1 md:order-2"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-              >
-                <div className="space-y-3">
-                  <h2 className="text-2xl sm:text-3xl font-light tracking-tight">
-                    Contact <span className="text-gradient font-medium">Info</span>
-                  </h2>
-                  <p className="text-muted-foreground font-light">
-                    Prefer to reach out directly? Here's how you can contact me.
-                  </p>
-                </div>
-
-                <div className="p-6 sm:p-8 bg-secondary/30 rounded-2xl space-y-6">
-                  {/* Email */}
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <Mail className="w-5 h-5 text-primary" />
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium text-muted-foreground">
-                        Email
-                      </p>
-                      <a
-                        href={`mailto:${designerInfo.email}`}
-                        className="text-base md:text-lg font-light hover:text-primary transition-colors break-all"
-                      >
-                        {designerInfo.email}
-                      </a>
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  {/* Response Time */}
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <Clock className="w-5 h-5 text-primary" />
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium text-muted-foreground">
-                        Response Time
-                      </p>
-                      <p className="text-base md:text-lg font-light">
-                        Within {designerInfo.responseTime}
-                      </p>
+              <div className="p-6 sm:p-8 bg-secondary/30 rounded-2xl space-y-5">
+                {rows.map((row, i) => (
+                  <div key={row.label}>
+                    {i > 0 && <Separator className="mb-5" />}
+                    <div className="flex items-start gap-4">
+                      <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <row.icon className="w-5 h-5 text-primary" aria-hidden="true" />
+                      </div>
+                      <div className="space-y-1 min-w-0">
+                        <p className="text-sm font-medium text-muted-foreground">{row.label}</p>
+                        {row.href ? (
+                          <a
+                            href={row.href}
+                            className="text-base hover:text-primary transition-colors break-all"
+                          >
+                            {row.value}
+                          </a>
+                        ) : (
+                          <p className="text-base">{row.value}</p>
+                        )}
+                      </div>
                     </div>
                   </div>
+                ))}
+              </div>
 
-                  <Separator />
-
-                  {/* Location */}
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <MapPin className="w-5 h-5 text-primary" />
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium text-muted-foreground">
-                        Location
-                      </p>
-                      <p className="text-base md:text-lg font-light">
-                        {designerInfo.location}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Fiverr CTA */}
-                <div className="p-6 sm:p-8 bg-[#1DBF73]/10 rounded-2xl border border-[#1DBF73]/20">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-[#1DBF73]/20 flex items-center justify-center flex-shrink-0">
-                      <svg className="w-6 h-6 text-[#1DBF73]" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M23.004 15.588a.995.995 0 1 0 .002-1.99.995.995 0 0 0-.002 1.99zm-.996-3.705h-.85c-.546 0-.84.41-.84 1.092v2.466h-1.61v-3.558h-.684c-.547 0-.84.41-.84 1.092v2.466h-1.61v-4.874h1.61v.74c.264-.574.626-.74 1.163-.74h1.972v.74c.264-.574.625-.74 1.162-.74h.527v1.316z"/>
-                      </svg>
-                    </div>
-                    <div className="space-y-2 flex-1">
-                      <p className="font-medium text-foreground">
-                        Hire on Fiverr
-                      </p>
-                      <p className="text-sm text-muted-foreground font-light">
-                        View my services and order directly with secure payment.
-                      </p>
-                      <a
-                        href={designerInfo.socialLinks.fiverr}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-[#1DBF73] font-medium hover:underline"
-                      >
-                        View Profile
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Availability Badge */}
-                <div className="text-center p-4 bg-primary/10 rounded-xl">
-                  <p className="text-sm font-medium text-primary">
-                    ✨ {designerInfo.availability}
-                  </p>
-                </div>
-              </motion.div>
-            </div>
+              <div className="p-6 rounded-2xl border border-primary/30 bg-primary/5">
+                <p className="font-medium">
+                  {bn ? 'এখনই এজেন্টের সাথে কথা বলুন' : 'Try the agent right now'}
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {bn
+                    ? 'নিচের ডানদিকের চ্যাট বাটনে ক্লিক করুন — বাংলা বা ইংরেজিতে প্রশ্ন করুন।'
+                    : 'Open the chat button in the bottom-right corner and ask in Bangla or English.'}
+                </p>
+              </div>
+            </motion.div>
           </div>
         </section>
 
-        {/* Bottom spacing */}
         <div className="h-16" />
       </div>
     </>

@@ -12,7 +12,6 @@ import { LoadingFallback } from "@/components/ui/LoadingFallback";
 import { PageTransition } from "@/components/ui/PageTransition";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AdminLayout } from "@/components/admin/AdminLayout";
-import { ChatWidget } from "@/components/chat/ChatWidget";
 import { AnimatePresence } from "framer-motion";
 import { lazy, Suspense } from "react";
 
@@ -48,7 +47,8 @@ function AnimatedRoutes() {
 
   return (
     <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
+      <ErrorBoundary scope={location.pathname} key={location.pathname}>
+      <Routes location={location}>
         <Route path="/" element={<PageTransition><Home /></PageTransition>} />
         <Route path="/solutions/:slug" element={<PageTransition><SolutionPage /></PageTransition>} />
         <Route path="/pricing" element={<PageTransition><Pricing /></PageTransition>} />
@@ -77,6 +77,7 @@ function AnimatedRoutes() {
 
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
+      </ErrorBoundary>
     </AnimatePresence>
   );
 }
@@ -96,7 +97,6 @@ const App = () => (
                     <AnimatedRoutes />
                   </Suspense>
                 </Layout>
-                <ChatWidget />
               </BrowserRouter>
             </TooltipProvider>
         </LanguageProvider>
