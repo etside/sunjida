@@ -5,11 +5,11 @@ const snippet = `curl -X POST https://api.salesdaddy.ai/v1/agents \\
   -H "Authorization: Bearer $SALESDADDY_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{
-    "name": "Shop Assistant",
+    "name": "Support Agent",
     "type": "voice",
     "languages": ["bn", "en"],
     "tools": ["inventory.lookup", "orders.create"],
-    "webhook_url": "https://yourshop.com/hooks/salesdaddy"
+    "webhook_url": "https://yourdomain.com/hooks/salesdaddy"
   }'`;
 
 const eventList = [

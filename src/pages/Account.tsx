@@ -5,8 +5,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { format } from 'date-fns';
 import { 
-  User, Package, MapPin, Mail, Phone, Edit, 
-  ChevronRight, ShoppingBag, Clock, Loader2, LogOut
+  User, Package, MapPin, Mail, Phone, Edit,
+  ChevronRight, Clock, Loader2, LogOut
 } from 'lucide-react';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { Button } from '@/components/ui/button';
@@ -155,14 +155,11 @@ export default function Account() {
                 {orders.length === 0 ? (
                   <Card>
                     <CardContent className="py-12 text-center">
-                      <ShoppingBag className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                      <Package className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
                       <h3 className="text-lg font-medium mb-2">No orders yet</h3>
                       <p className="text-muted-foreground mb-4">
-                        Start shopping to see your orders here
+                        Orders from your conversations will appear here
                       </p>
-                      <Button asChild>
-                        <Link to="/shop">Browse Shop</Link>
-                      </Button>
                     </CardContent>
                   </Card>
                 ) : (

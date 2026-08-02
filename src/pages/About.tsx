@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Bot, Globe2, ShieldCheck, Store, Workflow, Headphones } from 'lucide-react';
+import { Bot, Globe2, ShieldCheck, Package, Workflow, Headphones } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { useLanguage } from '@/i18n/LanguageProvider';
@@ -42,7 +42,7 @@ export default function About() {
         : 'One brain and one training set powering both chat threads and phone calls.',
     },
     {
-      icon: Store,
+      icon: Package,
       title: bn ? 'স্টক ও অর্ডার' : 'Stock and orders',
       body: bn
         ? 'আপনার ক্যাটালগ সিঙ্ক হয়, স্টক দেখে উত্তর দেয় এবং অর্ডার সরাসরি আপনার সাইটে পাঠায়।'

@@ -96,8 +96,8 @@ export default function Home() {
             </div>
             <p className="mt-6 text-sm text-muted-foreground">
               {lang === 'bn'
-                ? '“আপা, নীল শাড়িটা কি স্টকে আছে?” — এজেন্ট স্টক দেখে উত্তর দেয়, তারপর অর্ডার নেয়।'
-                : '“Is the blue saree still in stock?” — the agent checks inventory, answers, and takes the order.'}
+                ? '“আপা, নীল কালারটা কি স্টকে আছে?” — এজেন্ট স্টক দেখে উত্তর দেয়, তারপর অর্ডার নেয়।'
+                : '“Is the blue variant still in stock?” — the agent checks inventory, answers, and takes the order.'}
             </p>
           </motion.div>
         </div>

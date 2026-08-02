@@ -73,7 +73,7 @@ export default function Onboarding() {
           <form onSubmit={submit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">Business name</Label>
-              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required placeholder="Rupali Fashion" />
+              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required placeholder="My Business" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="website">Website</Label>
@@ -81,7 +81,7 @@ export default function Onboarding() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="industry">Industry</Label>
-              <Input id="industry" value={industry} onChange={(e) => setIndustry(e.target.value)} placeholder="Fashion & apparel" />
+              <Input id="industry" value={industry} onChange={(e) => setIndustry(e.target.value)} placeholder="Your industry" />
             </div>
             <Button type="submit" className="w-full" disabled={saving}>
               {saving ? 'Creating…' : 'Create workspace'}

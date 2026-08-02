@@ -163,7 +163,7 @@ export default function Channels() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="display_name">Display name</Label>
-                <Input id="display_name" value={form.display_name} onChange={(e) => setForm((f) => ({ ...f, display_name: e.target.value }))} placeholder="Rupali Fashion Page" />
+                <Input id="display_name" value={form.display_name} onChange={(e) => setForm((f) => ({ ...f, display_name: e.target.value }))} placeholder="My Business Page" />
               </div>
               {form.channel === 'whatsapp' ? (
                 <div className="space-y-2">
