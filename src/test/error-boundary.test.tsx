@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 function Boom({ explode }: { explode: boolean }) {
@@ -21,24 +20,22 @@ describe("ErrorBoundary", () => {
     expect(screen.getByRole("button", { name: /return home/i })).toBeInTheDocument();
   });
 
-  it("recovers when the user retries", async () => {
+  it("recovers when the scope (route) changes", () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
-    const user = userEvent.setup();
 
-    let explode = true;
-    const Harness = () => (
-      <ErrorBoundary>
-        <Boom explode={explode} />
-      </ErrorBoundary>
+    const { rerender } = render(
+      <ErrorBoundary scope="/broken">
+        <Boom explode />
+      </ErrorBoundary>,
     );
-
-    render(<Harness />);
     expect(screen.getByText(/Something went wrong/i)).toBeInTheDocument();
 
-    explode = false;
-    await user.click(screen.getByRole("button", { name: /try again/i }));
-
-    expect(await screen.findByText("All good")).toBeInTheDocument();
+    rerender(
+      <ErrorBoundary scope="/healthy">
+        <Boom explode={false} />
+      </ErrorBoundary>,
+    );
+    expect(screen.getByText("All good")).toBeInTheDocument();
   });
 
   it("shows a compact fallback in inline mode", () => {
