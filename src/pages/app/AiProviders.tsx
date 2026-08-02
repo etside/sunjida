@@ -74,7 +74,7 @@ export default function AiProviders() {
       .insert({
         business_id: business.id,
         provider,
-        provider_label: label.trim() || PROVIDERS.find((p) => p.value === provider)?.label ?? provider,
+        provider_label: label.trim() || (PROVIDERS.find((p) => p.value === provider)?.label ?? provider),
         api_key_encrypted: apiKey, // TODO: encrypt server-side
         api_key_hash: btoa(apiKey), // placeholder — use proper SHA-256 in edge function
         api_key_preview: preview,
