@@ -37,20 +37,48 @@ export function mintApiKey() {
   return { plaintext: `${prefix}.${secret}`, prefix };
 }
 
-/** Resolve a business from an `X-SalesDaddy-Key` header. */
-export async function businessFromApiKey(db: Db, rawKey: string | null) {
+/** Resolve a business from an `X-SalesDaddy-Key` header, with scope + rate-limit checks. */
+export async function businessFromApiKey(
+  db: Db,
+  rawKey: string | null,
+  requiredScope?: string,
+): Promise<{ business: Record<string, unknown>; keyRecord: Record<string, unknown> } | null> {
   if (!rawKey) return null;
   const prefix = rawKey.split(".")[0];
   if (!prefix) return null;
 
   const { data: key } = await db
     .from("business_api_keys")
-    .select("id, business_id, key_hash, revoked_at")
+    .select("id, business_id, key_hash, revoked_at, scopes, rate_limit_per_minute, expires_at, ip_whitelist")
     .eq("key_prefix", prefix)
     .maybeSingle();
 
   if (!key || key.revoked_at) return null;
   if ((await sha256(rawKey)) !== key.key_hash) return null;
+
+  // Check expiration
+  if (key.expires_at && new Date(key.expires_at) < new Date()) return null;
+
+  // Check scope
+  if (requiredScope && !(key.scopes ?? []).includes(requiredScope)) return null;
+
+  // Rate limit check: count "used" actions in last minute
+  const oneMinAgo = new Date(Date.now() - 60_000).toISOString();
+  const { count } = await db
+    .from("api_key_audit_log")
+    .select("id", { count: "exact", head: true })
+    .eq("api_key_id", key.id)
+    .eq("action", "used")
+    .gte("created_at", oneMinAgo);
+
+  if ((count ?? 0) >= (key.rate_limit_per_minute ?? 60)) return null;
+
+  // Log usage
+  await db.from("api_key_audit_log").insert({
+    api_key_id: key.id,
+    business_id: key.business_id,
+    action: "used",
+  });
 
   await db
     .from("business_api_keys")
@@ -63,7 +91,7 @@ export async function businessFromApiKey(db: Db, rawKey: string | null) {
     .eq("id", key.business_id)
     .maybeSingle();
 
-  return business?.is_active ? business : null;
+  return business?.is_active ? { business, keyRecord: key } : null;
 }
 
 /* ------------------------------------------------------------------ */

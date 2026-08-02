@@ -29,6 +29,28 @@ const CHANNELS = [
   { value: 'whatsapp', label: 'WhatsApp Business' },
 ];
 
+const REQUIRED_SCOPES: Record<string, string[]> = {
+  messenger: [
+    'pages_show_list',
+    'pages_read_engagement',
+    'pages_messaging',
+    'pages_manage_posts',
+  ],
+  instagram: [
+    'instagram_basic',
+    'instagram_manage_messages',
+    'instagram_manage_comments',
+    'pages_show_list',
+    'pages_read_engagement',
+  ],
+  whatsapp: [
+    'whatsapp_business_management',
+    'whatsapp_business_messaging',
+    'pages_show_list',
+    'pages_read_engagement',
+  ],
+};
+
 export default function Channels() {
   const { business } = useBusiness();
   const [channels, setChannels] = useState<Channel[]>([]);
@@ -169,6 +191,20 @@ export default function Channels() {
             </div>
             <Button type="submit" disabled={busy}>Connect channel</Button>
           </form>
+
+          <div className="mt-4 rounded-lg border border-border p-3">
+            <p className="text-xs font-medium text-muted-foreground mb-2">
+              Required Meta App Scopes for {CHANNELS.find((c) => c.value === form.channel)?.label}:
+            </p>
+            <div className="flex flex-wrap gap-1">
+              {(REQUIRED_SCOPES[form.channel] ?? []).map((s) => (
+                <Badge key={s} variant="secondary" className="text-[10px]">{s}</Badge>
+              ))}
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-2">
+              Ensure these permissions are approved in your Meta App Dashboard before connecting.
+            </p>
+          </div>
         </CardContent>
       </Card>
 

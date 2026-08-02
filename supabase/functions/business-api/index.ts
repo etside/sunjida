@@ -20,8 +20,9 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   const db = adminClient();
-  const business = await businessFromApiKey(db, req.headers.get("x-salesdaddy-key"));
-  if (!business) return json({ error: "Invalid or revoked API key." }, 401);
+  const authResult = await businessFromApiKey(db, req.headers.get("x-salesdaddy-key"));
+  if (!authResult) return json({ error: "Invalid or revoked API key." }, 401);
+  const { business } = authResult;
 
   const url = new URL(req.url);
   const route = url.pathname.split("/business-api")[1]?.replace(/^\/|\/$/g, "") ?? "";
