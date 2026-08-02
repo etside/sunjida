@@ -5,7 +5,7 @@ Multi-tenant SaaS platform for AI-powered customer service with voice and chat c
 ## Live
 
 - **Dashboard:** https://salesdaddy.lovable.app
-- **Supabase:** https://yplgzmxzrslofnuagfaz.supabase.co
+- **Supabase:** Your Supabase project URL
 
 ## Tech Stack
 
@@ -78,9 +78,9 @@ npm run build
 ## Environment Variables
 
 ```env
-VITE_SUPABASE_URL=https://yplgzmxzrslofnuagfaz.supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=eyJ...
-VITE_SUPABASE_PROJECT_ID=yplgzmxzrslofnuagfaz
+VITE_SUPABASE_URL=https://YOUR_PROJECT_ID.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=your-anon-key
+VITE_SUPABASE_PROJECT_ID=your-project-id
 ```
 
 ## Deployment

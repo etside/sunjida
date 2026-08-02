@@ -1,4 +1,4 @@
-project_id = "yplgzmxzrslofnuagfaz"
+project_id = "your-project-id"
 
 [functions.agent-chat]
 verify_jwt = false
