@@ -12,7 +12,7 @@ const NotFound = () => {
   return (
     <>
       <SEOHead
-        title="Page Not Found"
+        title="Page Not Found | SalesDaddy"
         description="The page you're looking for doesn't exist. Return to the homepage to continue browsing."
       />
       

@@ -169,7 +169,7 @@ export default function AgentSettingsPage() {
 
       <h1 className="text-3xl font-bold text-foreground">AI Agent</h1>
       <p className="mt-2 text-muted-foreground">
-        Your bilingual assistant runs on Lovable AI — no API key, no code. Configure it here and connect Messenger or
+        Your bilingual assistant runs on SalesDaddy AI — no API key, no code. Configure it here and connect Messenger or
         WhatsApp from your Meta Business account.
       </p>
       <Link to="/admin/analytics" className="mt-3 inline-flex text-sm font-medium text-primary hover:underline">

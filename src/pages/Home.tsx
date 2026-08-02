@@ -17,7 +17,7 @@ export default function Home() {
     <>
       <SEOHead
         title="SalesDaddy — Bangla & English AI Voice and Chat Agents"
-        description="SalesDaddy builds AI voice agents, chat agents, live inventory access and webhooks for Bangla and English speaking commerce teams."
+        description="AI voice agents for order calls and COD verification. Chat agents for Messenger, WhatsApp and website. Live inventory sync and webhooks. Built for Bangladeshi commerce."
       />
 
       {/* Hero */}

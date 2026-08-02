@@ -48,7 +48,7 @@ export default function AdminDashboard() {
 
   return (
     <>
-      <SEOHead title="Admin Dashboard" description="SalesDaddy admin control panel" />
+      <SEOHead title="Admin Dashboard | SalesDaddy" description="SalesDaddy admin control panel" />
 
       <div className="min-h-screen bg-secondary/20">
         <header className="bg-background border-b border-border sticky top-0 z-40">

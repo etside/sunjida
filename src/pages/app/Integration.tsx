@@ -178,7 +178,7 @@ export default function Integration() {
     }
   };
 
-  const snippet = `<script src="https://salesdaddy.lovable.app/widget.js"
+  const snippet = `<script src="${window.location.origin}/widget.js"
   data-business="${business?.id ?? ''}" defer></script>`;
 
   const copy = (value: string) => {

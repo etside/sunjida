@@ -104,7 +104,7 @@ export default function Account() {
 
   return (
     <>
-      <SEOHead title="My Account" description="Manage your account and view order history" />
+      <SEOHead title="My Account | SalesDaddy" description="Manage your account and view order history" />
 
       <div className="min-h-screen bg-secondary/20 py-8 md:py-12">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
