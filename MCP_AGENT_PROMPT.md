@@ -593,7 +593,38 @@ say so and offer to connect a human.
 
 ---
 
-## 15. Usage Notes
+## 15. Live MCP Endpoint
+
+**URL:** `https://<YOUR_SUPABASE_URL>/functions/v1/mcp`
+
+**Authentication:** `X-SalesDaddy-Key` header with a valid API key.
+
+**Protocol:** JSON-RPC 2.0 over HTTP POST (MCP 2024-11-05).
+
+**Quick test:**
+```bash
+curl -X POST https://<YOUR_SUPABASE_URL>/functions/v1/mcp \
+  -H "Content-Type: application/json" \
+  -H "X-SalesDaddy-Key: sd_xxxx.yyyy" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"my-client","version":"1.0"}}}'
+```
+
+**Connect from ChatGPT/Claude/Cursor:**
+Add this to your MCP client config:
+```json
+{
+  "salesdaddy": {
+    "url": "https://<YOUR_SUPABASE_URL>/functions/v1/mcp",
+    "headers": {
+      "X-SalesDaddy-Key": "sd_xxxx.yyyy"
+    }
+  }
+}
+```
+
+---
+
+## 16. Usage Notes
 
 1. **Per-business customization**: Each business can override the system prompt, greetings, and model via `agent_settings`
 2. **Catalog freshness**: Products are synced from the business's website — always query the database, don't cache in the prompt
