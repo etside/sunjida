@@ -1,13 +1,15 @@
 // Meta (Messenger + Instagram + WhatsApp) webhook. Each business brings their own Meta app.
 import {
   adminClient,
-  buildCatalogContext,
+  buildVectorCatalogContext,
   buildSystemPrompt,
   buildTrainingContext,
   callGateway,
   canPlaceOrders,
   classifyAndUpsertLead,
   getSettings,
+  getVoiceSettings,
+  generateSpeech,
   placeOrderTool,
   runPlaceOrder,
 } from "../_shared/agent.ts";
@@ -196,8 +198,17 @@ Deno.serve(async (req) => {
         .insert({ conversation_id: convo!.id, role: "user", content: event.text });
 
       const canOrder = businessId ? await canPlaceOrders(db, businessId) : false;
+
+      // Vector search: find products semantically matching the user's query
+      const vectorCatalog = businessId
+        ? await buildVectorCatalogContext(db, businessId, event.text)
+        : "";
+
+      // Fallback: if no vector matches, use full catalog
+      const catalog = vectorCatalog || (await buildCatalogContext(db, businessId));
+
       const system = buildSystemPrompt(settings, {
-        catalog: await buildCatalogContext(db, businessId),
+        catalog,
         training: await buildTrainingContext(db, businessId),
         channel: `${event.channel} (Meta)`,
         canOrder,
@@ -245,11 +256,44 @@ Deno.serve(async (req) => {
       }
 
       if (reply) {
+        // Generate voice audio if voice is enabled
+        let audioUrl: string | null = null;
+        if (businessId) {
+          const voiceSettings = await getVoiceSettings(db, businessId);
+          if (voiceSettings.voice_enabled) {
+            audioUrl = await generateSpeech(reply, voiceSettings);
+          }
+        }
+
+        // Store the reply
         await db
           .from("agent_messages")
-          .insert({ conversation_id: convo!.id, role: "assistant", content: reply });
-        await sendMeta(channel, event.from, reply);
+          .insert({
+            conversation_id: convo!.id,
+            role: "assistant",
+            content: reply,
+            audio_url: audioUrl,
+          });
 
+        // Enqueue reply for async processing via pgmq
+        // This keeps the webhook response under Meta's timeout
+        const jobPayload = {
+          conversation_id: convo!.id,
+          tenant_id: businessId,
+          channel: event.channel,
+          recipient: event.from,
+          text: reply,
+          audio_url: audioUrl,
+          page_id: channel.page_id,
+          access_token: channel.access_token,
+        };
+
+        await db.rpc("pgmq_send", {
+          queue_name: "messenger_replies",
+          message: JSON.stringify(jobPayload),
+        });
+
+        // Also process lead classification in background
         if (businessId) {
           await classifyAndUpsertLead(db, {
             businessId,

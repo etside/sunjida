@@ -17,6 +17,10 @@ type Settings = {
   greeting_bn: string;
   instructions: string;
   is_enabled: boolean;
+  voice_enabled: boolean;
+  voice_provider: string;
+  voice_model: string;
+  voice_speed: number;
 };
 
 type Channel = {
@@ -69,7 +73,7 @@ export default function AgentSettingsPage() {
   useEffect(() => {
     supabase
       .from('agent_settings')
-      .select('id, business_name, greeting_en, greeting_bn, instructions, is_enabled')
+      .select('id, business_name, greeting_en, greeting_bn, instructions, is_enabled, voice_enabled, voice_provider, voice_model, voice_speed')
       .limit(1)
       .maybeSingle()
       .then(({ data }) => setSettings(data as Settings));
@@ -104,6 +108,10 @@ export default function AgentSettingsPage() {
         greeting_bn: settings.greeting_bn,
         instructions: settings.instructions,
         is_enabled: settings.is_enabled,
+        voice_enabled: settings.voice_enabled,
+        voice_provider: settings.voice_provider,
+        voice_model: settings.voice_model,
+        voice_speed: settings.voice_speed,
       })
       .eq('id', settings.id);
     setSaving(false);
@@ -227,6 +235,61 @@ export default function AgentSettingsPage() {
                 value={settings.instructions}
                 onChange={(e) => setSettings({ ...settings, instructions: e.target.value })}
               />
+            </div>
+
+            {/* Voice settings */}
+            <div className="rounded-lg border border-border bg-muted/30 p-4 mt-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="voice-toggle">Voice replies</Label>
+                  <p className="text-xs text-muted-foreground">Send audio messages alongside text in Messenger</p>
+                </div>
+                <Switch
+                  id="voice-toggle"
+                  checked={settings.voice_enabled}
+                  onCheckedChange={(v) => setSettings({ ...settings, voice_enabled: v })}
+                />
+              </div>
+              {settings.voice_enabled && (
+                <div className="mt-4 grid gap-4 sm:grid-cols-3">
+                  <div>
+                    <Label htmlFor="voice-provider">Provider</Label>
+                    <select
+                      id="voice-provider"
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      value={settings.voice_provider}
+                      onChange={(e) => setSettings({ ...settings, voice_provider: e.target.value })}
+                    >
+                      <option value="openai">OpenAI</option>
+                    </select>
+                  </div>
+                  <div>
+                    <Label htmlFor="voice-model">Voice model</Label>
+                    <select
+                      id="voice-model"
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      value={settings.voice_model}
+                      onChange={(e) => setSettings({ ...settings, voice_model: e.target.value })}
+                    >
+                      <option value="tts-1">tts-1</option>
+                      <option value="tts-1-hd">tts-1-hd</option>
+                    </select>
+                  </div>
+                  <div>
+                    <Label htmlFor="voice-speed">Speed ({settings.voice_speed}x)</Label>
+                    <input
+                      id="voice-speed"
+                      type="range"
+                      min="0.5"
+                      max="2.0"
+                      step="0.1"
+                      value={settings.voice_speed}
+                      onChange={(e) => setSettings({ ...settings, voice_speed: parseFloat(e.target.value) })}
+                      className="mt-2 w-full"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
             <Button onClick={saveSettings} disabled={saving} className="w-fit">
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Save

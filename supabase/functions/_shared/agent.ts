@@ -212,6 +212,163 @@ export function gatewayErrorMessage(status: number) {
   return "The assistant could not respond. Please try again.";
 }
 
+/* ------------------------------------------------------------------ */
+/* Vector search — tenant-filtered product matching                    */
+/* ------------------------------------------------------------------ */
+
+/** Generate an embedding vector for text using the Lovable AI embeddings endpoint. */
+export async function generateEmbedding(text: string): Promise<number[] | null> {
+  try {
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/embeddings", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Lovable-API-Key": Deno.env.get("LOVABLE_API_KEY") ?? "",
+      },
+      body: JSON.stringify({
+        model: "text-embedding-3-small",
+        input: text,
+      }),
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json?.data?.[0]?.embedding ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** Search products by semantic similarity for a tenant. */
+export async function searchProducts(
+  db: Db,
+  tenantId: string,
+  query: string,
+  matchCount = 5,
+) {
+  const embedding = await generateEmbedding(query);
+  if (!embedding) return [];
+
+  const { data, error } = await db.rpc("match_products", {
+    p_tenant_id: tenantId,
+    p_embedding: embedding,
+    p_match_count: matchCount,
+    p_min_similarity: 0.3,
+  });
+
+  if (error) {
+    console.error("Vector search failed:", error.message);
+    return [];
+  }
+
+  return (data ?? []) as Array<{
+    id: string;
+    external_id: string;
+    name: string;
+    description: string | null;
+    price: number;
+    currency: string;
+    stock_quantity: number | null;
+    image_url: string | null;
+    product_url: string | null;
+    similarity: number;
+  }>;
+}
+
+/** Build a catalog context string from vector-searched products. */
+export async function buildVectorCatalogContext(
+  db: Db,
+  tenantId: string,
+  userQuery: string,
+): Promise<string> {
+  const products = await searchProducts(db, tenantId, userQuery);
+  if (!products.length) return "";
+
+  const lines = products.map((p) => {
+    const stock =
+      p.stock_quantity == null
+        ? "stock unknown"
+        : p.stock_quantity > 0
+          ? `in stock (${p.stock_quantity})`
+          : "out of stock";
+    return `- [${p.external_id}] ${p.name} | ${p.currency} ${p.price ?? "?"} | ${stock} | similarity: ${p.similarity.toFixed(2)}`;
+  });
+
+  return `\n\nSEMANTICALLY MATCHED PRODUCTS (ranked by relevance to user query):\n${lines.join("\n")}`;
+}
+
+/* ------------------------------------------------------------------ */
+/* Text-to-Speech — voice reply generation                            */
+/* ------------------------------------------------------------------ */
+
+export type VoiceSettings = {
+  voice_enabled: boolean;
+  voice_provider: string;
+  voice_model: string;
+  voice_speed: number;
+};
+
+export const DEFAULT_VOICE: VoiceSettings = {
+  voice_enabled: false,
+  voice_provider: "openai",
+  voice_model: "tts-1",
+  voice_speed: 1.0,
+};
+
+/** Get voice settings for a tenant. */
+export async function getVoiceSettings(
+  db: Db,
+  businessId?: string | null,
+): Promise<VoiceSettings> {
+  let query = db
+    .from("agent_settings")
+    .select("voice_enabled, voice_provider, voice_model, voice_speed")
+    .limit(1);
+
+  query = businessId ? query.eq("business_id", businessId) : query.is("business_id", null);
+  const { data } = await query.maybeSingle();
+  return (data as VoiceSettings) ?? DEFAULT_VOICE;
+}
+
+/** Generate speech audio from text using OpenAI TTS. Returns a data URL. */
+export async function generateSpeech(
+  text: string,
+  settings: VoiceSettings,
+): Promise<string | null> {
+  const openaiKey = Deno.env.get("OPENAI_API_KEY");
+  if (!openaiKey || !settings.voice_enabled) return null;
+
+  try {
+    const res = await fetch("https://api.openai.com/v1/audio/speech", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${openaiKey}`,
+      },
+      body: JSON.stringify({
+        model: settings.voice_model || "tts-1",
+        input: text.slice(0, 4096), // TTS max input length
+        voice: "alloy",
+        speed: settings.voice_speed || 1.0,
+        response_format: "mp3",
+      }),
+    });
+
+    if (!res.ok) {
+      console.error(`TTS failed [${res.status}]: ${await res.text()}`);
+      return null;
+    }
+
+    const buffer = await res.arrayBuffer();
+    const base64 = btoa(
+      new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), ""),
+    );
+    return `data:audio/mpeg;base64,${base64}`;
+  } catch (e) {
+    console.error("TTS error:", (e as Error).message);
+    return null;
+  }
+}
+
 /** Non-streaming completion, with optional tool support. */
 export async function completeChat(
   model: string,
