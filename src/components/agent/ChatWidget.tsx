@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { MessageSquare, X, Send, Loader2 } from 'lucide-react';
+import { MessageSquare, X, Send, Loader2, Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
 import { useLanguage } from '@/i18n/LanguageProvider';
 import { Button } from '@/components/ui/button';
 
@@ -19,9 +19,57 @@ export function ChatWidget() {
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [listening, setListening] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
   const conversationId = useRef<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const recognitionRef = useRef<any>(null);
+  const synthRef = useRef<SpeechSynthesis | null>(null);
+
+  // Initialize speech synthesis
+  useEffect(() => {
+    synthRef.current = window.speechSynthesis ?? null;
+  }, []);
+
+  // Speak text aloud using browser TTS
+  const speak = useCallback((text: string) => {
+    if (!voiceEnabled || !synthRef.current || !text) return;
+    synthRef.current.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = /[\u0980-\u09FF]/.test(text) ? 'bn-BD' : 'en-US';
+    utter.rate = 1.0;
+    synthRef.current.speak(utter);
+  }, [voiceEnabled]);
+
+  // Start/stop speech recognition
+  const toggleMic = useCallback(() => {
+    if (listening) {
+      recognitionRef.current?.stop();
+      setListening(false);
+      return;
+    }
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) {
+      setError('Speech recognition is not supported in this browser');
+      return;
+    }
+    const rec = new SR();
+    rec.lang = lang === 'bn' ? 'bn-BD' : 'en-US';
+    rec.interimResults = true;
+    rec.continuous = false;
+    rec.onresult = (e: any) => {
+      const transcript = Array.from(e.results)
+        .map((r: any) => r[0].transcript)
+        .join('');
+      setInput(transcript);
+    };
+    rec.onend = () => setListening(false);
+    rec.onerror = () => setListening(false);
+    recognitionRef.current = rec;
+    rec.start();
+    setListening(true);
+  }, [listening, lang]);
 
   useEffect(() => {
     const fallback =
@@ -109,6 +157,15 @@ export function ChatWidget() {
           }
         }
       }
+      // Auto-speak the full reply after streaming completes
+      setMessages((prev) => {
+        const last = prev[prev.length - 1];
+        if (last?.role === 'assistant' && last.content) {
+          // Defer speak so state is settled
+          setTimeout(() => speak(last.content), 100);
+        }
+        return prev;
+      });
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -137,13 +194,22 @@ export function ChatWidget() {
                 <p className="text-sm font-semibold text-foreground">{title}</p>
                 <p className="text-xs text-muted-foreground">বাংলা · English · 24/7</p>
               </div>
-              <button
-                onClick={() => setOpen(false)}
-                aria-label="Close chat"
-                className="rounded-md p-1 text-muted-foreground transition-colors hover:text-foreground"
-              >
-                <X className="h-4 w-4" />
-              </button>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setVoiceEnabled((v) => !v)}
+                  aria-label={voiceEnabled ? 'Mute voice' : 'Enable voice'}
+                  className="rounded-md p-1 text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {voiceEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+                </button>
+                <button
+                  onClick={() => setOpen(false)}
+                  aria-label="Close chat"
+                  className="rounded-md p-1 text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
             </header>
 
             <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
@@ -160,6 +226,15 @@ export function ChatWidget() {
                   }
                 >
                   {m.content || <Loader2 className="h-4 w-4 animate-spin" />}
+                  {m.role === 'assistant' && m.content && voiceEnabled && (
+                    <button
+                      onClick={() => speak(m.content)}
+                      aria-label="Read aloud"
+                      className="ml-2 inline-block align-middle text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      <Volume2 className="h-3 w-3" />
+                    </button>
+                  )}
                 </div>
               ))}
               {busy && messages[messages.length - 1]?.role === 'user' && (
@@ -178,11 +253,23 @@ export function ChatWidget() {
               }}
               className="flex items-center gap-2 border-t border-border px-3 py-3"
             >
+              <button
+                type="button"
+                onClick={toggleMic}
+                aria-label={listening ? 'Stop recording' : 'Start voice input'}
+                className={`rounded-lg p-2 transition-colors ${
+                  listening
+                    ? 'bg-destructive text-destructive-foreground animate-pulse'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                }`}
+              >
+                {listening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+              </button>
               <input
                 ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder={placeholder}
+                placeholder={listening ? (lang === 'bn' ? 'শুনছি...' : 'Listening...') : placeholder}
                 aria-label={placeholder}
                 className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
               />
