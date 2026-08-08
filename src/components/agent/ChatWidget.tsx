@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { MessageSquare, X, Send, Loader2 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/i18n/LanguageProvider';
 import { Button } from '@/components/ui/button';
 
@@ -32,18 +31,12 @@ export function ChatWidget() {
 
     void (async () => {
       try {
-        const { data } = await supabase
-          .from('agent_settings')
-          .select('greeting_en, greeting_bn, is_enabled')
-          .is('business_id', null)
-          .limit(1)
-          .maybeSingle();
-        if (!data) {
-          setEnabled(true);
-          setGreeting(fallback);
-          return;
-        }
-        setEnabled(data.is_enabled);
+        const res = await fetch(CHAT_URL, {
+          headers: { apikey: SUPABASE_ANON, Authorization: `Bearer ${SUPABASE_ANON}` },
+        });
+        if (!res.ok) throw new Error('bootstrap failed');
+        const data = await res.json();
+        setEnabled(data.is_enabled !== false);
         setGreeting((lang === 'bn' ? data.greeting_bn : data.greeting_en) || fallback);
       } catch {
         setEnabled(true);
@@ -51,6 +44,7 @@ export function ChatWidget() {
       }
     })();
   }, [lang]);
+
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });

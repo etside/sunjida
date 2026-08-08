@@ -147,38 +147,184 @@ export type Database = {
           },
         ]
       }
+      api_key_audit_log: {
+        Row: {
+          action: string
+          api_key_id: string
+          business_id: string
+          created_at: string
+          endpoint: string | null
+          id: string
+          ip_address: string | null
+          metadata: Json
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          api_key_id: string
+          business_id: string
+          created_at?: string
+          endpoint?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          api_key_id?: string
+          business_id?: string
+          created_at?: string
+          endpoint?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_key_audit_log_api_key_id_fkey"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "business_api_keys"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "api_key_audit_log_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      business_ai_providers: {
+        Row: {
+          api_key_encrypted: string
+          api_key_hash: string
+          api_key_preview: string
+          base_url: string | null
+          business_id: string
+          created_at: string
+          id: string
+          is_active: boolean
+          is_default: boolean
+          last_test_status: string | null
+          last_tested_at: string | null
+          last_used_at: string | null
+          metadata: Json
+          model: string | null
+          provider: string
+          provider_label: string
+          rate_limit_rpm: number | null
+          updated_at: string
+          usage_cost_usd: number
+          usage_tokens_total: number
+        }
+        Insert: {
+          api_key_encrypted: string
+          api_key_hash: string
+          api_key_preview: string
+          base_url?: string | null
+          business_id: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          last_test_status?: string | null
+          last_tested_at?: string | null
+          last_used_at?: string | null
+          metadata?: Json
+          model?: string | null
+          provider: string
+          provider_label?: string
+          rate_limit_rpm?: number | null
+          updated_at?: string
+          usage_cost_usd?: number
+          usage_tokens_total?: number
+        }
+        Update: {
+          api_key_encrypted?: string
+          api_key_hash?: string
+          api_key_preview?: string
+          base_url?: string | null
+          business_id?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          last_test_status?: string | null
+          last_tested_at?: string | null
+          last_used_at?: string | null
+          metadata?: Json
+          model?: string | null
+          provider?: string
+          provider_label?: string
+          rate_limit_rpm?: number | null
+          updated_at?: string
+          usage_cost_usd?: number
+          usage_tokens_total?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_ai_providers_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       business_api_keys: {
         Row: {
           business_id: string
           created_at: string
+          expires_at: string | null
           id: string
+          ip_whitelist: string[] | null
           key_hash: string
           key_prefix: string
+          last_rotated_at: string | null
           last_used_at: string | null
           name: string
+          rate_limit_per_minute: number
           revoked_at: string | null
+          rotated_from: string | null
+          scopes: string[]
           updated_at: string
         }
         Insert: {
           business_id: string
           created_at?: string
+          expires_at?: string | null
           id?: string
+          ip_whitelist?: string[] | null
           key_hash: string
           key_prefix: string
+          last_rotated_at?: string | null
           last_used_at?: string | null
           name?: string
+          rate_limit_per_minute?: number
           revoked_at?: string | null
+          rotated_from?: string | null
+          scopes?: string[]
           updated_at?: string
         }
         Update: {
           business_id?: string
           created_at?: string
+          expires_at?: string | null
           id?: string
+          ip_whitelist?: string[] | null
           key_hash?: string
           key_prefix?: string
+          last_rotated_at?: string | null
           last_used_at?: string | null
           name?: string
+          rate_limit_per_minute?: number
           revoked_at?: string | null
+          rotated_from?: string | null
+          scopes?: string[]
           updated_at?: string
         }
         Relationships: [
@@ -187,6 +333,13 @@ export type Database = {
             columns: ["business_id"]
             isOneToOne: false
             referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "business_api_keys_rotated_from_fkey"
+            columns: ["rotated_from"]
+            isOneToOne: false
+            referencedRelation: "business_api_keys"
             referencedColumns: ["id"]
           },
         ]
@@ -1029,6 +1182,106 @@ export type Database = {
           },
         ]
       }
+      social_oauth_sessions: {
+        Row: {
+          business_id: string
+          created_at: string
+          expires_at: string
+          id: string
+          platform: string
+          redirect_url: string | null
+          scopes: string[]
+          state_token: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          platform: string
+          redirect_url?: string | null
+          scopes?: string[]
+          state_token: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          platform?: string
+          redirect_url?: string | null
+          scopes?: string[]
+          state_token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_oauth_sessions_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      social_platform_connections: {
+        Row: {
+          access_token: string
+          business_id: string
+          connected_at: string
+          id: string
+          is_active: boolean
+          last_synced_at: string | null
+          metadata: Json
+          page_id: string | null
+          page_name: string | null
+          platform: string
+          platform_user_id: string
+          refresh_token: string | null
+          scopes: string[]
+          token_expires_at: string | null
+        }
+        Insert: {
+          access_token: string
+          business_id: string
+          connected_at?: string
+          id?: string
+          is_active?: boolean
+          last_synced_at?: string | null
+          metadata?: Json
+          page_id?: string | null
+          page_name?: string | null
+          platform: string
+          platform_user_id: string
+          refresh_token?: string | null
+          scopes?: string[]
+          token_expires_at?: string | null
+        }
+        Update: {
+          access_token?: string
+          business_id?: string
+          connected_at?: string
+          id?: string
+          is_active?: boolean
+          last_synced_at?: string | null
+          metadata?: Json
+          page_id?: string | null
+          page_name?: string | null
+          platform?: string
+          platform_user_id?: string
+          refresh_token?: string | null
+          scopes?: string[]
+          token_expires_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_platform_connections_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
@@ -1046,6 +1299,59 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      webhook_configurations: {
+        Row: {
+          business_id: string
+          channel: string
+          created_at: string
+          events: string[]
+          failure_count: number
+          id: string
+          is_active: boolean
+          last_triggered_at: string | null
+          max_failures: number
+          updated_at: string
+          webhook_secret: string
+          webhook_url: string
+        }
+        Insert: {
+          business_id: string
+          channel: string
+          created_at?: string
+          events?: string[]
+          failure_count?: number
+          id?: string
+          is_active?: boolean
+          last_triggered_at?: string | null
+          max_failures?: number
+          updated_at?: string
+          webhook_secret: string
+          webhook_url: string
+        }
+        Update: {
+          business_id?: string
+          channel?: string
+          created_at?: string
+          events?: string[]
+          failure_count?: number
+          id?: string
+          is_active?: boolean
+          last_triggered_at?: string | null
+          max_failures?: number
+          updated_at?: string
+          webhook_secret?: string
+          webhook_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_configurations_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
