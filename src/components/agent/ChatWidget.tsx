@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { MessageSquare, X, Send, Loader2 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/i18n/LanguageProvider';
 import { Button } from '@/components/ui/button';
 
