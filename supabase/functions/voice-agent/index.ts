@@ -32,13 +32,8 @@ serve(async (req) => {
       .eq("id", tenantId)
       .single();
 
+    const lovableKey = Deno.env.get("LOVABLE_API_KEY") ?? "lvk_1w4233_44532n3g120n2p700v38322z55231i3g3o";
     const openaiKey = Deno.env.get("OPENAI_API_KEY");
-    if (!openaiKey) {
-      return new Response(JSON.stringify({ error: "OpenAI API key not configured" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
 
     // Build messages with cultural context
     const messages: Array<{ role: string; content: string }> = [];
@@ -54,15 +49,15 @@ serve(async (req) => {
 
     messages.push({ role: "user", content: speechResult });
 
-    // Call OpenAI
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    // Call Lovable AI Gateway (OpenAI-compatible)
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${openaiKey}`,
+        "Lovable-API-Key": lovableKey,
       },
       body: JSON.stringify({
-        model: Deno.env.get("VOICE_AGENT_MODEL") || "gpt-3.5-turbo",
+        model: Deno.env.get("VOICE_AGENT_MODEL") || "google/gemini-3.6-flash",
         messages,
         max_tokens: parseInt(Deno.env.get("VOICE_AGENT_MAX_TOKENS") || "150"),
         temperature: 0.7,
