@@ -101,8 +101,9 @@ describe("route smoke tests", () => {
       /^\/order-success$/,
       /^\/product\/[^/]+$/,
       /^\/solutions\/[^/]+$/,
-      /^\/admin(\/(agent|analytics))?$/,
-      /^\/app(\/(onboarding|leads|training|integration|channels))?$/,
+      /^\/admin(\/(login|agent|analytics))?$/,
+      /^\/app(\/(onboarding|leads|training|integration|channels|inventory|ai-providers|social))?$/,
+
     ];
 
     const unknown = hrefs.filter((href) => !known.some((re) => re.test(href ?? "")));
