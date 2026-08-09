@@ -14,13 +14,13 @@ RewriteRule ^auth/v1/user$ /api/auth.php?action=session [L,QSA]
 RewriteRule ^auth/v1/logout$ /api/auth.php?action=signout [L,QSA]
 
 # ── Admin panel: let PHP handle /admin/* ──────────────────────────────
-RewriteCond %{REQUEST_URI} ^/admin/
 RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} ^/admin/
 RewriteRule ^admin/(.*)$ /admin/index.php [L,QSA]
 
 # ── API routes: let PHP handle /api/* ─────────────────────────────────
-RewriteCond %{REQUEST_URI} ^/api/
 RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} ^/api/
 RewriteRule ^api/(.*)$ /api/$1 [L,QSA]
 
 # ── SPA fallback: React Router handles client-side routes ─────────────

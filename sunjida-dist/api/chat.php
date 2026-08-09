@@ -294,7 +294,7 @@ function getFallbackResponse(PDO $db, string $message, ?string $businessId): ?st
 
     // Try matching product names in message
     try {
-        $stmt = $db->prepare('SELECT name, price, description FROM products WHERE is_active = 1 LIMIT 20');
+        $stmt = $db->prepare('SELECT name, price, description FROM products LIMIT 20');
         $stmt->execute();
         $products = $stmt->fetchAll();
         $msgLower = mb_strtolower($message);

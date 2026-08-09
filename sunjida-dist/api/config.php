@@ -66,7 +66,7 @@ function sseResponse(string $text, ?string $conversationId = null): void {
     foreach ($chunks as $chunk) {
         $data = json_encode(['choices' => [['delta' => ['content' => $chunk]]]]);
         echo "data: $data\n\n";
-        ob_flush();
+        if (ob_get_level()) ob_flush();
         flush();
         usleep(12000); // 12ms delay for progressive rendering
     }

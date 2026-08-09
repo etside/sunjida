@@ -12,6 +12,8 @@ $action = $_GET['action'] ?? '';
 $method = $_SERVER['REQUEST_METHOD'];
 $input = json_decode(file_get_contents('php://input'), true) ?? [];
 
+try {
+
 switch ($action) {
 
     // ── Dashboard ───────────────────────────────────────────────────
@@ -194,4 +196,8 @@ switch ($action) {
 
     default:
         jsonResponse(['error' => 'Unknown action'], 400);
+}
+
+} catch (Throwable $e) {
+    jsonResponse(['error' => $e->getMessage()], 500);
 }

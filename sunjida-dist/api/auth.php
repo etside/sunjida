@@ -23,7 +23,7 @@ $action = $_GET['action'] ?? ($_POST['action'] ?? null);
 $grantType = $_GET['grant_type'] ?? null;
 
 // ── Sign in with email/password ──────────────────────────────────────
-if ($grantType === 'password' || $_SERVER['REQUEST_METHOD'] === 'POST' && !$action) {
+if (($grantType === 'password') || ($_SERVER['REQUEST_METHOD'] === 'POST' && !$action)) {
     $input = json_decode(file_get_contents('php://input'), true);
     if (!$input) {
         $input = $_POST;
@@ -73,6 +73,7 @@ if ($grantType === 'password' || $_SERVER['REQUEST_METHOD'] === 'POST' && !$acti
             'expires' => $expiresAt,
             'path' => '/',
             'httponly' => true,
+            'secure' => true,
             'samesite' => 'Lax',
         ]);
 

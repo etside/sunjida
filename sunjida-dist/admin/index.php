@@ -16,6 +16,7 @@ if (!isset($_SESSION['sd_admin']) && $_SERVER['REQUEST_METHOD'] === 'POST' && is
             $role = $db->prepare('SELECT 1 FROM user_roles WHERE user_id = ? AND role = "admin"');
             $role->execute([$user['id']]);
             if ($role->fetch()) {
+                session_regenerate_id(true);
                 $_SESSION['sd_admin'] = true;
                 $_SESSION['sd_admin_id'] = $user['id'];
                 $_SESSION['sd_admin_email'] = $user['email'];
