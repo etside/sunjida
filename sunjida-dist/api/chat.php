@@ -100,7 +100,7 @@ if ($method === 'POST') {
             CURLOPT_POSTFIELDS     => $payload,
             CURLOPT_HTTPHEADER     => [
                 'Content-Type: application/json',
-                'Authorization: Bearer ' . $apiKey['api_key'],
+                'Lovable-API-Key: ' . $apiKey['api_key'],
             ],
             CURLOPT_TIMEOUT        => 60,
         ]);
