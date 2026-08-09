@@ -1,0 +1,45 @@
+name: Build cPanel Deployment Zip
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Assemble deployment zip
+        run: |
+          mkdir -p /tmp/cpanel-dist
+
+          # ── Frontend (built by Vite) ──
+          cp -r dist/* /tmp/cpanel-dist/
+
+          # ── PHP backend ──
+          cp -r sunjida-dist/api       /tmp/cpanel-dist/
+          cp -r sunjida-dist/admin     /tmp/cpanel-dist/
+          cp    sunjida-dist/schema.sql /tmp/cpanel-dist/
+
+          # ── Root-level files ──
+          cp sunjida-dist/.htaccess /tmp/cpanel-dist/
+          cp sunjida-dist/sw.js     /tmp/cpanel-dist/
+
+          # ── Create zip ──
+          cd /tmp
+          zip -r "$GITHUB_WORKSPACE/cpanel-dist.zip" cpanel-dist/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cpanel-dist
+          path: cpanel-dist.zip
