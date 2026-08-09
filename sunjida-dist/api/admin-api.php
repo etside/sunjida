@@ -12,13 +12,6 @@ $action = $_GET['action'] ?? '';
 $method = $_SERVER['REQUEST_METHOD'];
 $input = json_decode(file_get_contents('php://input'), true) ?? [];
 
-// CSRF check for mutations
-if (in_array($method, ['POST', 'DELETE'])) {
-    if (!verifyCsrf()) {
-        jsonResponse(['error' => 'Invalid CSRF token'], 403);
-    }
-}
-
 switch ($action) {
 
     // ── Dashboard ───────────────────────────────────────────────────

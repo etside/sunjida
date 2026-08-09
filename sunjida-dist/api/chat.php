@@ -387,36 +387,13 @@ function estimateTokens(array $messages, string $reply): int {
 
 function storeMessages(PDO $db, ?string $conversationId, array $userMessages, string $reply): void {
     try {
-        $db->exec("CREATE TABLE IF NOT EXISTS conversations (
-            id VARCHAR(36) PRIMARY KEY,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )");
-        $db->exec("CREATE TABLE IF NOT EXISTS messages (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            conversation_id VARCHAR(36),
-            role VARCHAR(20),
-            content TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            INDEX idx_conv (conversation_id)
-        )");
-
         if (!$conversationId) {
-            $conversationId = sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-                mt_rand(0, 0xffff), mt_rand(0, 0xffff),
-                mt_rand(0, 0xffff), mt_rand(0, 0x0fff) | 0x4000,
-                mt_rand(0, 0x3fff) | 0x8000,
-                mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
-            );
+            $conversationId = generateUUID();
             $db->prepare('INSERT IGNORE INTO conversations (id) VALUES (?)')->execute([$conversationId]);
         }
-
         $stmt = $db->prepare('INSERT INTO messages (conversation_id, role, content) VALUES (?, ?, ?)');
         $lastUser = end($userMessages);
-        if ($lastUser) {
-            $stmt->execute([$conversationId, 'user', $lastUser['content'] ?? '']);
-        }
+        if ($lastUser) $stmt->execute([$conversationId, 'user', $lastUser['content'] ?? '']);
         $stmt->execute([$conversationId, 'assistant', $reply]);
-    } catch (Throwable $e) {
-        error_log('[SalesDaddy] storeMessages error: ' . $e->getMessage());
-    }
+    } catch (Throwable $e) { /* non-critical */ }
 }

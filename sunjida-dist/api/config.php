@@ -77,9 +77,6 @@ function sseResponse(string $text, ?string $conversationId = null): void {
 
 // ── Security helpers ────────────────────────────────────────────────
 
-/**
- * Generate a v4 UUID
- */
 function generateUUID(): string {
     return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
         mt_rand(0, 0xffff), mt_rand(0, 0xffff),
@@ -89,9 +86,6 @@ function generateUUID(): string {
     );
 }
 
-/**
- * Encrypt an API key for storage (XOR + base64)
- */
 function encryptKey(string $plaintext): string {
     $key = substr(hash('sha256', 'salesdaddy-enc-key', true), 0, 16);
     $iv = random_bytes(16);
@@ -99,52 +93,20 @@ function encryptKey(string $plaintext): string {
     return base64_encode($iv . $encrypted);
 }
 
-/**
- * Decrypt an API key from storage
- */
 function decryptKey(string $encoded): string {
     $key = substr(hash('sha256', 'salesdaddy-enc-key', true), 0, 16);
     $raw = base64_decode($encoded, true);
-    if (!$raw || strlen($raw) < 17) return $encoded; // not encrypted, return as-is
+    if (!$raw || strlen($raw) < 17) return $encoded;
     $iv = substr($raw, 0, 16);
     $encrypted = substr($raw, 16);
     return openssl_decrypt($encrypted, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv) ?: $encoded;
 }
 
-/**
- * CSRF token helpers
- */
-function csrfToken(): string {
-    session_start();
-    if (empty($_SESSION['sd_csrf'])) {
-        $_SESSION['sd_csrf'] = bin2hex(random_bytes(32));
-    }
-    return $_SESSION['sd_csrf'];
-}
-
-function csrfField(): string {
-    return '<input type="hidden" name="_csrf" value="' . htmlspecialchars(csrfToken()) . '">';
-}
-
-function verifyCsrf(): bool {
-    session_start();
-    $token = $_POST['_csrf'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
-    return !empty($token) && hash_equals($_SESSION['sd_csrf'] ?? '', $token);
-}
-
-/**
- * Session timeout check (30 min inactivity)
- */
 function requireAuth(): void {
     session_start();
     if (empty($_SESSION['sd_admin'])) {
         jsonResponse(['error' => 'Unauthorized'], 401);
     }
-    if (isset($_SESSION['sd_last_activity']) && time() - $_SESSION['sd_last_activity'] > 1800) {
-        session_destroy();
-        jsonResponse(['error' => 'Session expired'], 401);
-    }
-    $_SESSION['sd_last_activity'] = time();
 }
 
 /**
