@@ -13,7 +13,8 @@ if (!isset($_SESSION['sd_admin']) && $_SERVER['REQUEST_METHOD'] === 'POST' && is
         $stmt->execute([$_POST['email']]);
         $user = $stmt->fetch();
         if ($user && password_verify($_POST['password'], $user['encrypted_password'])) {
-            $role = $db->prepare('SELECT 1 FROM user_roles WHERE user_id = ? AND role = "admin"');
+            // Accept both 'admin' and 'super_admin' roles
+            $role = $db->prepare('SELECT 1 FROM user_roles WHERE user_id = ? AND role IN ("admin", "super_admin")');
             $role->execute([$user['id']]);
             if ($role->fetch()) {
                 session_regenerate_id(true);
@@ -22,11 +23,14 @@ if (!isset($_SESSION['sd_admin']) && $_SERVER['REQUEST_METHOD'] === 'POST' && is
                 $_SESSION['sd_admin_email'] = $user['email'];
                 header('Location: /admin/');
                 exit;
+            } else {
+                $loginError = 'Account exists but has no admin role. Run setup-admin.php first.';
             }
+        } else {
+            $loginError = 'Invalid email or password.';
         }
-        $loginError = 'Invalid credentials.';
     } catch (Throwable $e) {
-        $loginError = 'Connection error.';
+        $loginError = 'Connection error: ' . $e->getMessage();
     }
 }
 
