@@ -200,7 +200,7 @@ export async function callGateway(body: Record<string, unknown>) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${Deno.env.get("LOVABLE_API_KEY") ?? ""}`,
+      "Lovable-API-Key": Deno.env.get("LOVABLE_API_KEY") ?? "",
     },
     body: JSON.stringify(body),
   });
@@ -223,7 +223,7 @@ export async function generateEmbedding(text: string): Promise<number[] | null> 
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${Deno.env.get("LOVABLE_API_KEY") ?? ""}`,
+        "Lovable-API-Key": Deno.env.get("LOVABLE_API_KEY") ?? "",
       },
       body: JSON.stringify({
         model: "text-embedding-3-small",
@@ -342,7 +342,7 @@ export async function generateSpeech(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+        "Lovable-API-Key": apiKey,
       },
       body: JSON.stringify({
         model: settings.voice_model || "gpt-4o-mini-tts",
