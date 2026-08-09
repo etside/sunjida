@@ -200,7 +200,7 @@ export async function callGateway(body: Record<string, unknown>) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Lovable-API-Key": Deno.env.get("LOVABLE_API_KEY") ?? "lvk_1w4233_44532n3g120n2p700v38322z55231i3g3o",
+      "Lovable-API-Key": Deno.env.get("LOVABLE_API_KEY") ?? "",
     },
     body: JSON.stringify(body),
   });
@@ -223,7 +223,7 @@ export async function generateEmbedding(text: string): Promise<number[] | null> 
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Lovable-API-Key": Deno.env.get("LOVABLE_API_KEY") ?? "lvk_1w4233_44532n3g120n2p700v38322z55231i3g3o",
+        "Lovable-API-Key": Deno.env.get("LOVABLE_API_KEY") ?? "",
       },
       body: JSON.stringify({
         model: "text-embedding-3-small",
@@ -329,24 +329,24 @@ export async function getVoiceSettings(
   return (data as VoiceSettings) ?? DEFAULT_VOICE;
 }
 
-/** Generate speech audio from text using OpenAI TTS. Returns a data URL. */
+/** Generate speech audio from text using Lovable AI audio/speech endpoint. Returns a data URL. */
 export async function generateSpeech(
   text: string,
   settings: VoiceSettings,
 ): Promise<string | null> {
-  const openaiKey = Deno.env.get("OPENAI_API_KEY") ?? Deno.env.get("LOVABLE_API_KEY") ?? "lvk_1w4233_44532n3g120n2p700v38322z55231i3g3o";
-  if (!openaiKey || !settings.voice_enabled) return null;
+  const apiKey = Deno.env.get("LOVABLE_API_KEY");
+  if (!apiKey || !settings.voice_enabled) return null;
 
   try {
-    const res = await fetch("https://api.openai.com/v1/audio/speech", {
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/audio/speech", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${openaiKey}`,
+        "Lovable-API-Key": apiKey,
       },
       body: JSON.stringify({
-        model: settings.voice_model || "tts-1",
-        input: text.slice(0, 4096), // TTS max input length
+        model: settings.voice_model || "gpt-4o-mini-tts",
+        input: text.slice(0, 4096),
         voice: "alloy",
         speed: settings.voice_speed || 1.0,
         response_format: "mp3",
