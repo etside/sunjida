@@ -1,0 +1,98 @@
+============================================
+  SalesDaddy — cPanel Deployment Guide
+============================================
+
+QUICK START (5 steps)
+---------------------
+
+1. UPLOAD
+   Upload ALL contents of this folder to your cPanel public_html/ directory.
+   Use cPanel File Manager → Upload, or FTP/SFTP.
+
+2. IMPORT DATABASE
+   - Go to cPanel → phpMyAdmin
+   - Select your database (e.g. torquest_Sales)
+   - Click Import tab
+   - Choose schema.sql from this folder
+   - Click Go
+
+3. SETUP ADMIN (one-time)
+   Visit in your browser:
+   https://yourdomain.com/api/setup-admin.php?key=salesdaddy-setup-2024
+
+   This creates:
+   - Admin user: admin@salesdaddy.com
+   - Password: Pjokjict4
+   - Roles: super_admin + admin (both auto-granted)
+
+4. DELETE setup-admin.php
+   After step 3, DELETE api/setup-admin.php for security.
+   cPanel File Manager → navigate to api/ → delete setup-admin.php
+
+5. LOGIN
+   Admin Panel: https://yourdomain.com/admin/
+   Tenant App:  https://yourdomain.com/app/onboarding
+
+ADMIN CREDENTIALS
+-----------------
+  Email:    admin@salesdaddy.com
+  Password: Pjokjict4
+
+  CHANGE THIS PASSWORD after first login!
+
+FILES
+-----
+  index.html          SPA entry point (React)
+  .htaccess           Apache rewrite rules
+  sw.js               Service worker (Supabase → PHP fallback)
+  schema.sql          MySQL database import
+  robots.txt          Search engine rules
+  assets/             Compiled JS/CSS bundles
+  admin/              PHP admin panel
+    index.php         Login + CRUD dashboard
+    logout.php        Session logout
+  api/                PHP backend
+    config.php        DB config, AI gateway, helpers
+    auth.php          Session-based auth (Supabase-compatible)
+    chat.php          AI chat with streaming + training data
+    tts.php           Text-to-speech via Lovable gateway
+    admin-api.php     Admin CRUD (keys, training, responses)
+    db-schema.php     Runtime schema migration
+    health.php        Health check endpoint
+    training-export.php  Export training data
+    setup-admin.php   ONE-TIME SETUP — DELETE AFTER USE
+
+CUSTOMIZATION
+-------------
+  1. Edit api/config.php to set your database credentials:
+     $host = 'localhost';
+     $dbname = 'your_database';
+     $username = 'your_db_user';
+     $password = 'your_db_password';
+
+  2. Edit api/config.php to set your Lovable AI Gateway key:
+     define('LOVABLE_API_KEY', 'your-key-here');
+
+  3. The .htaccess rewrite rules work for any domain.
+     No domain-specific changes needed.
+
+SERVICE WORKER FALLBACK
+------------------------
+  The service worker (sw.js) automatically redirects Supabase
+  requests to the PHP backend when Supabase is unreachable.
+  This ensures the app works even without Supabase Edge Functions.
+
+  Health checks run every 30 seconds to detect when Supabase
+  comes back online.
+
+TROUBLESHOOTING
+---------------
+  - 500 errors: Check api/config.php DB credentials
+  - Blank page: Ensure all files uploaded to public_html root
+  - Auth fails: Run setup-admin.php, then delete it
+  - Chat fails: Verify Lovable API key in api/config.php
+
+============================================
+  SalesDaddy — AI Voice & Chat Agents
+  https://salesdaddy.torquesticker.com
+============================================

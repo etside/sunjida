@@ -5,8 +5,6 @@ RewriteBase /
 DirectoryIndex index.html index.php
 
 # ── PHP Fallback: proxy Supabase to local PHP backend ────────────────
-RewriteCond %{HTTP_HOST} ^salesdaddy\.torquesticker\.com$ [OR]
-RewriteCond %{HTTP_HOST} ^www\.salesdaddy\.torquesticker\.com$
 RewriteRule ^functions/v1/agent-chat$ /api/chat.php [L,QSA]
 RewriteRule ^functions/v1/voice-agent$ /api/tts.php [L,QSA]
 RewriteRule ^auth/v1/token$ /api/auth.php?grant_type=password [L,QSA]

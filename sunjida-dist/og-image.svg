@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="60" y="260" width="200" height="6" rx="3" fill="#F4600F"/>
+  <text x="60" y="240" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="700" fill="white">SalesDaddy</text>
+  <text x="60" y="330" font-family="system-ui, -apple-system, sans-serif" font-size="32" fill="#94a3b8">AI Voice &amp; Chat Agents for Bangla and English Commerce</text>
+  <text x="60" y="400" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#64748b">Live inventory · Webhooks · Social channels · Training</text>
+  <circle cx="1080" cy="160" r="120" fill="#F4600F" opacity="0.15"/>
+  <circle cx="1120" cy="500" r="80" fill="#F4600F" opacity="0.1"/>
+</svg>
