@@ -1,0 +1,35 @@
+RewriteEngine On
+RewriteBase /
+
+# ── PHP Fallback: proxy Supabase to local PHP backend ────────────────
+# When Supabase is down, Apache rewrites function/auth calls to the local PHP backend.
+# The Service Worker handles this client-side, but this covers non-JS clients
+# and provides a second layer of fallback.
+RewriteCond %{HTTP_HOST} ^salesdaddy\.torquesticker\.com$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.salesdaddy\.torquesticker\.com$
+RewriteRule ^functions/v1/agent-chat$ /api/chat.php [L,QSA]
+RewriteRule ^functions/v1/voice-agent$ /api/tts.php [L,QSA]
+RewriteRule ^auth/v1/token$ /api/auth.php?grant_type=password [L,QSA]
+RewriteRule ^auth/v1/user$ /api/auth.php?action=session [L,QSA]
+RewriteRule ^auth/v1/logout$ /api/auth.php?action=signout [L,QSA]
+
+# Handle Angular and React routes
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [L]
+
+# Enable gzip compression
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/javascript application/json image/svg+xml
+</IfModule>
+
+# Cache static assets
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>

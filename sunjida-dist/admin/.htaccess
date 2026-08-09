@@ -1,0 +1,14 @@
+# Protect admin directory
+# Only allow access from localhost or with session
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Allow direct access (PHP handles auth check)
+</IfModule>
+
+# Block directory listing
+Options -Indexes
+
+# Cache admin assets
+<IfModule mod_expires.c>
+    ExpiresActive Off
+</IfModule>
