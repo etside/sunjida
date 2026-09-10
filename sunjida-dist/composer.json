@@ -1,0 +1,41 @@
+{
+    "name": "sunjida/backend",
+    "description": "Sunjida - AI-powered sales assistant for e-commerce",
+    "type": "project",
+    "license": "proprietary",
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=8.1",
+        "ext-pdo_pgsql": "*",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-openssl": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0",
+        "squizlabs/php_codesniffer": "^3.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "Sunjida\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Sunjida\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit --configuration phpunit.xml",
+        "test:unit": "phpunit --configuration phpunit.xml tests/Unit",
+        "test:integration": "phpunit --configuration phpunit.xml tests/Integration",
+        "check": "phpcs --standard=PSR12 src/",
+        "check:fix": "phpcbf --standard=PSR12 src/"
+    },
+    "config": {
+        "sort-packages": true,
+        "optimize-autoloader": true
+    }
+}
